@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  </head>
+  <body>
+    <pre class="mermaid">
+    graph LR
+      subgraph Graph ["Link Prediction"]
+          direction LR
+          A((User A)) --- B((User B))
+          B --- C((User C))
+          
+          A -.->|Unobserved| C
+          A ==>|Latent| D((User D))
+      end
+    </pre>
+    <pre class="mermaid">
+    graph TD
+      subgraph Silos [Siloed Data]
+          direction LR
+          dbA[(Graph A)] --> predA(Partial Predictions)
+          dbB[(Graph B)] --> predB(Partial Predictions)
+      end
+
+      subgraph Merged [Merged Data]
+          direction LR
+          dbA2[(Graph A)] & dbB2[(Graph B)] --> join{Merge}
+          join --> final[(Enriched Graph)]
+          final --> BestPred(Enriched Predictions)
+      end
+    </pre>
+
+    <script>
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </body>
+</html>
