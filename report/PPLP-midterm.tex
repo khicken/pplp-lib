@@ -1,0 +1,129 @@
+%%
+%% PPLP Midterm Report -- ACM sigconf (2-column) format
+%% Privacy-Preserving Link Prediction
+%%
+\documentclass[sigconf]{acmart}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{Bib\TeX}}}
+
+\setcopyright{acmlicensed}
+\copyrightyear{2025}
+\acmYear{2025}
+\acmDOI{10.1145/XXXXXXX.XXXXXXX}
+\acmConference[CSDS 356/456]{Project Report (Midterm)}{2025}{Cleveland, OH}
+\settopmatter{printacmref=false}
+
+\begin{document}
+
+\title{PPLP: Privacy-Preserving Link Prediction}
+
+\author{Kaleb Kim}
+\author{Wiam Skakri}
+\author{Carson Whitehouse}
+\author{Jonah Lorenzo}
+\author{Kent Manion}
+\author{Aidan Bugayong}
+\affiliation{%
+  \institution{Case Western Reserve University}
+  \city{Cleveland}
+  \state{Ohio}
+  \country{USA}
+}
+\renewcommand{\shortauthors}{Kim et al.}
+
+\begin{abstract}
+Link prediction on a single graph is well studied; combining multiple graphs (distributed link prediction) can improve accuracy but raises serious privacy concerns. We describe our plan to build a Python library that enables \emph{privacy-preserving link prediction} (PPLP): multiple data holders compute link-prediction scores over their combined graph without revealing their private graph structure. Our approach builds on private set intersection (PSI) and homomorphic encryption, following the protocol of Ayday et al., and we plan to use the ultra-fast PSI of Ling et al.\ for practical performance. This midterm report states the problem, surveys related work, outlines our planned methods, next steps, and expected deliverables.
+\end{abstract}
+
+\keywords{link prediction, private set intersection, homomorphic encryption, distributed graphs, privacy}
+
+\maketitle
+
+%=============================================================================
+\section{Problem Statement and Literature Search}
+%=============================================================================
+
+\subsection{Link Prediction}
+Link prediction aims to discover unobserved or latent connections between nodes in a graph~\cite{liben-nowell2007link}. Given a snapshot of a network at time $t$, the goal is to predict which edges will appear by a future time $t'$ using structural information (e.g., proximity measures or graph neural networks). Applications include friend recommendation in social networks, product recommendation in e-commerce, planning in telecommunications, and association discovery in bioinformatics.
+
+Link prediction is typically performed on a single local graph. \textbf{Distributed link prediction} considers the setting where two or more parties hold related graphs (e.g., overlapping node sets or the same domain). Merging these graphs can yield more accurate predictions, but sharing raw graph data raises \textbf{privacy risks}: identity disclosure, link disclosure, and attribute disclosure. We therefore focus on \textbf{privacy-preserving link prediction (PPLP)}: multiple data holders collaboratively compute link-prediction scores over their combined graph \emph{without} revealing their private graph structure to each other.
+
+\subsection{Related Work}
+
+\textbf{Link prediction.} Liben-Nowell and Kleinberg~\cite{liben-nowell2007link} formalize the link-prediction problem using only network topology (no node attributes) and study proximity-based measures such as common neighbors, Jaccard, and Adamic--Adar.
+
+\textbf{Privacy-preserving link prediction.} Ayday et al.~\cite{Demirag2022} give a two-party protocol in which each party holds a graph; they compute \emph{common neighbors} over the union of both graphs using private set intersection (PSI) and additively homomorphic encryption. The common-neighbor count is expressed as local terms plus crossover terms minus overlaps, computed with a small number of PSI calls. Their threat model assumes semi-honest adversaries and no trusted third party. They also discuss a heavier homomorphic variant to reduce intermediate leakage.
+
+\textbf{Private set intersection.} PSI lets two parties compute the intersection of their sets while revealing only the result. Chen et al.~\cite{chen2017fast} give a high-performance PSI protocol from fully homomorphic encryption (FHE) with communication complexity $O(N_{\text{small}} \cdot \log N_{\text{large}})$. Lattice-based FHE~\cite{gentry2009lattice} made such protocols practically relevant. Ling et al.~\cite{ling2025ultrafast} propose an ultra-fast PSI from efficient Oblivious Key-Value Stores (OKVS) and Vector Oblivious Linear Evaluation (VOLE), with $O(n)$ communication and very low encoding redundancy (on the order of 1\%), which we plan to use for our implementation.
+
+%=============================================================================
+\section{Planned Methods}
+%=============================================================================
+
+\subsection{Link-Prediction Measures}
+We will support at least one of the following proximity-based measures, which can be expressed using set operations over neighbor sets and thus combined with PSI.
+
+\begin{itemize}
+  \item \textbf{Common Neighbors (CN):} For nodes $u$ and $v$, $\text{CN}(u,v) = |N(u) \cap N(v)|$. More common neighbors imply higher link likelihood.
+  \item \textbf{Jaccard:} $\frac{|N(u) \cap N(v)|}{|N(u) \cup N(v)|}$, which accounts for the relative overlap.
+  \item \textbf{Adamic--Adar (AA):} $\sum_{w \in N(u) \cap N(v)} \frac{1}{\log |N(w)|}$, emphasizing common neighbors with lower degree.
+\end{itemize}
+
+\subsection{Two-Party Common Neighbors via PSI}
+Following Ayday et al., for two parties Alice (graph $G_A$) and Bob (graph $G_B$), the common-neighbor count for a candidate pair $(A,E)$ can be decomposed into:
+\begin{itemize}
+  \item Local intersections: $I_A(A,E) = N_A(A) \cap N_A(E)$ and $I_B(A,E) = N_B(A) \cap N_B(E)$ (each party computes locally).
+  \item Crossover terms: e.g., $N_A(A) \setminus I_A$ with $N_B(E) \setminus I_B$, etc., which require PSI so that only intersection sizes (or masked sets) are revealed.
+\end{itemize}
+The total $|\text{CN}(A,E)|$ is then obtained as $|I_A| + |I_B| - |I_A \cap I_B|$ plus the contributions from the crossover PSI results (e.g., $|I_{A+B}|$ and the sizes of the privately computed crossover intersections). The protocol uses a small, fixed number of PSI calls per candidate pair.
+
+\subsection{Privacy Primitives}
+\begin{itemize}
+  \item \textbf{Private Set Intersection (PSI):} Core primitive to compute intersections (or their sizes) over neighbor sets without revealing the sets themselves. We plan to base our implementation on the ultra-fast PSI of Ling et al. (OKVS + VOLE) for $O(n)$ communication and low bandwidth.
+  \item \textbf{Homomorphic encryption (HE):} Used in the protocol to compute on encrypted neighbor sets (e.g., for the polynomial-based PSI of Chen et al. or as in Ayday et al.); FHE allows operations on ciphertexts without decryption.
+\end{itemize}
+
+\subsection{System Architecture}
+\begin{itemize}
+  \item \textbf{Core backend (C++):} High-performance PSI and cryptographic primitives (e.g., leveraging an existing implementation such as ShallMate/fastpsi for the Ling et al. protocol).
+  \item \textbf{Python bindings:} Pybind11 or Cython to expose the backend to Python, so that data scientists can run PPLP without writing low-level code.
+  \item \textbf{Optional front-end:} A web dashboard (e.g., React or Streamlit) for uploading graph snapshots and visualizing predicted links.
+\end{itemize}
+
+%=============================================================================
+\section{Next Steps}
+%=============================================================================
+
+\begin{enumerate}
+  \item Integrate or implement the ultra-fast PSI protocol (Ling et al.) and verify correctness and performance in our setting.
+  \item Implement the two-party common-neighbor protocol (and optionally Jaccard and Adamic--Adar) using a fixed number of PSI calls per node pair as in Ayday et al.
+  \item Design and implement the Python API (graph input, parameterization, and output of link scores or top-$k$ predictions).
+  \item Set up multi-machine communication (separate endpoints for each party) so that two instances of the library can run on different computers and execute the PPLP protocol.
+  \item Optionally explore the heavier homomorphic variant of Ayday et al. for reduced leakage, and add a simple web UI for demos.
+\end{enumerate}
+
+%=============================================================================
+\section{Expected Output}
+%=============================================================================
+
+We aim to deliver:
+
+\begin{itemize}
+  \item An \textbf{integrable Python library} that allows users to run privacy-preserving link prediction on distributed graphs with a clear, documented API.
+  \item \textbf{Support for at least the Common Neighbors} measure in the two-party setting, with the option to extend to Jaccard and Adamic--Adar.
+  \item \textbf{Example use cases} (e.g., social networks, telecommunications, or e-commerce) demonstrating how to supply graphs and obtain link scores or recommendations without sharing raw graph data.
+  \item Optionally, a \textbf{web dashboard} for uploading graphs and visualizing predicted links.
+\end{itemize}
+
+Success is measured by: (1) correctness of the protocol (matching non-private common-neighbor counts where applicable), (2) practical runtime and communication cost, and (3) usability for developers who wish to integrate PPLP into their own applications.
+
+%=============================================================================
+\section*{Acknowledgments}
+%=============================================================================
+This project is conducted for CSDS 356/456. We thank the instructors and the authors of the cited works for the foundations on which we build.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

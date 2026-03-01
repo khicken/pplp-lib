@@ -1,0 +1,80 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{5}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Chen et~al\mbox{.}(2017)]%
+        {chen2017fast}
+\bibfield{author}{\bibinfo{person}{Hao Chen}, \bibinfo{person}{Kim Laine}, {and} \bibinfo{person}{Peter Rindal}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{Fast Private Set Intersection from Homomorphic Encryption}. In \bibinfo{booktitle}{\emph{Proceedings of the 2017 {ACM} {SIGSAC} Conference on Computer and Communications Security}} \emph{(\bibinfo{series}{CCS '17})}. \bibinfo{publisher}{ACM}, \bibinfo{pages}{1243--1255}.
+\newblock
+\href{https://doi.org/10.1145/3133956.3134067}{doi:\nolinkurl{10.1145/3133956.3134067}}
+
+
+\bibitem[Demirag et~al\mbox{.}(2022)]%
+        {Demirag2022}
+\bibfield{author}{\bibinfo{person}{Didem Demirag}, \bibinfo{person}{Mina Namazi}, \bibinfo{person}{Erman Ayday}, {and} \bibinfo{person}{Jeremy Clark}.} \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{Privacy-Preserving Link Prediction}. In \bibinfo{booktitle}{\emph{Data Privacy Management, Cryptocurrencies and Blockchain Technology}}. \bibinfo{publisher}{Springer International Publishing}, \bibinfo{pages}{35--50}.
+\newblock
+\href{https://doi.org/10.1007/978-3-031-25734-6_3}{doi:\nolinkurl{10.1007/978-3-031-25734-6_3}}
+
+
+\bibitem[Gentry(2009)]%
+        {gentry2009lattice}
+\bibfield{author}{\bibinfo{person}{Craig Gentry}.} \bibinfo{year}{2009}\natexlab{}.
+\newblock \showarticletitle{Fully Homomorphic Encryption Using Ideal Lattices}. In \bibinfo{booktitle}{\emph{Proceedings of the Forty-First Annual {ACM} Symposium on Theory of Computing}} \emph{(\bibinfo{series}{STOC '09})}. \bibinfo{publisher}{ACM}, \bibinfo{pages}{169--178}.
+\newblock
+
+
+\bibitem[Liben-Nowell and Kleinberg(2007)]%
+        {liben-nowell2007link}
+\bibfield{author}{\bibinfo{person}{David Liben-Nowell} {and} \bibinfo{person}{Jon Kleinberg}.} \bibinfo{year}{2007}\natexlab{}.
+\newblock \showarticletitle{The Link-Prediction Problem for Social Networks}.
+\newblock \bibinfo{journal}{\emph{Journal of the American Society for Information Science and Technology}} \bibinfo{volume}{58}, \bibinfo{number}{7} (\bibinfo{year}{2007}), \bibinfo{pages}{1019--1031}.
+\newblock
+\href{https://doi.org/10.1002/asi.20591}{doi:\nolinkurl{10.1002/asi.20591}}
+
+
+\bibitem[Ling et~al\mbox{.}(2025)]%
+        {ling2025ultrafast}
+\bibfield{author}{\bibinfo{person}{Guowei Ling}, \bibinfo{person}{Hao Chen}, \bibinfo{person}{Kim Laine}, {and} \bibinfo{person}{Peter Rindal}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{Ultra-Fast Private Set Intersection From Efficient Oblivious Key-Value Stores}. In \bibinfo{booktitle}{\emph{Proceedings of the Network and Distributed System Security Symposium}} \emph{(\bibinfo{series}{NDSS})}.
+\newblock
+\newblock
+\shownote{Implementation: github.com/ShallMate/fastpsi}.
+
+
+\end{thebibliography}

@@ -1,0 +1,361 @@
+Privacy Preserving Link Prediction - PPLP
+Kaleb Kim, Wiam Skarki, Carson Whitehouse,Jonah Lorenzo, Kent Manion, Aidan Bugayong
+
+Our Goal
+
+To build a Python library that allows anyone to apply privacy preserving link prediction.
+
+Link Prediction
+
+Link prediction helps discover unobserved or latent connections between nodes in a graph
+Data holders rank the likelihood of new connections forming overtime
+Useful for social networks, e-commerce, telecomms, bioinformatics
+Link Prediction
+Data holders rank the likelihood of new connections forming overtime by calculating proximity scores and graph neural networks (GNNs)
+
+Social Network: whether or not to recommend links between users
+E-commerce: personalized ads, recommend products
+Telecommunication: build optimal phone usage plans
+Bioinfo: association between diseases or genes
+
+Link prediction is typically done on a single local graph
+Link prediction can be more accurate if we merge two or more graph databases that include similar information (Distributed Link Prediction)
+Link Prediction
+Advantage/how of link prediction
+
+Two parties can utilize the connections in their combined graph to provide more accurate link predictions
+In other cases, distributed link prediction allows link prediction between nodes based on other attributes
+Distributed Link Prediction
+
+In some cases, collaboration is mutually beneficial to contributing parties
+In other cases, the second party is paid to participate
+Distributed Link Prediction results in privacy concerns since it implies combining two or more different graph databases!
+Identity Disclosure
+Link Disclosure
+Attribute Disclosure
+Distributed Link Prediction
+A
+C
+E
+B
+G
+H
+D
+A
+F
+E
+B
+C
+K
+D
+A
+C
+E
+B
+G
+H
+D
+K
+F
+
+Privacy Preserving Link Prediction
+
+Privacy preserving link prediction allows multiple data holders to collaboratively forecast unobserved or latent connections between nodes without explicitly revealing what each party knows.
+
+Use Cases
+Social Networks:
+PPLP Used to understand the likelihood of a link between two nodes based on the similarity of these nodes in the different graphs. Here the nodes are people and the graphs represent a person’s knowledge of the given social network.
+Telecommunication
+Advertising company wants to use a telecom network or phone network for an advertisement. Using PPLP and a target audience x, they can find similar audience members for their advertisement based on x’s connections.
+E-Commerce:
+A product would be recommended to a user if they purchase similar products or similar users buy said product
+Bioinformatics:
+A graph of EHRs linking patients to a disease can be privately shared with a clustering graph to show if a disease is being spread within clusters / predict if a patient could have the disease
+
+Common Neighbors Measure
+
+
+Computes the number of common neighbors between two parties
+More neighbors = Higher link likelihood
+Fails to account for the relative amount of neighbors
+
+Jaccard Measure
+Computation of the relative amount of neighbors in common
+This improves on the common neighbors measure
+
+Adamic-Adar Measure
+
+N(u) is the set of nodes adjacent to u
+the sum of the log of the intersection of the neighbors of two nodes
+Two-hop similarity helps to yield better results
+carson
+
+Homomorphic Encryption
+Homomorphic encryption allows for direct operations on encrypted data without knowing the contents of the encrypted data. This allows us to do Private Set Intersection as shown below:
+
+
+Where:                                            X exists in Graph 1 and Graph 2 iff P(X) = 0
+X is a fully homomorphically encrypted node in Graph 1
+xi is node i in Graph 2
+r is a random constant
+
+
+
+
+
+carson
+
+
+Private Set Intersection
+Private Set Intersection (PSI) protocols are the core of the privacy maintenance mechanisms used here
+There are many different algorithms that leverage both Oblivious Transfer (OT) and Fully Homomorphic Encryption (FHE), but OT is bottlenecked by communication complexity
+Lattice Based Cryptography from Craig Gentry in 2009 made FHE a practical possibility and it makes it possible to do PSI fast and with low communication overhead when optimized.
+carson
+
+And communication complexity makes it difficult to implement OT well
+
+https://eprint.iacr.org/2017/299.pdf
+https://fhe.org/history/
+
+
+Higher Level Example
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Subset only Looking N(A,E)
+G
+H
+D
+K
+D
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Searching Local Graph
+G
+H
+D
+K
+D
+NA(A)={H,G,B,C}
+NA(E)={D,C}
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+NA(A) - IA(A,E) ={H,G,B}
+NA(E) - IA(A,E) ={D}
+NB(A)={K,F,C}
+NB(E)={B,C,F,D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+NB(E) - IB(A,E) ={B,D}
+NB(A) - IB(A,E) ={K}
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Applying PSI
+G
+H
+D
+K
+D
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+NA(A-E)={H,G,B}
+NA(E-A)={D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+NB(E-A)={B,D}
+NB(A-E) ={K}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PSI
+IA∩IB=IA+B={C}
+NA(A-E)∩NB(E-A)={B}
+NA(E-A)∩NB(A-E)={𝜙}
+
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Size of CN(A,E)
+G
+H
+D
+K
+D
+NA(A)={H,G,B,C}
+NA(E)={D,C}
+IA(A,E)  = {C} 
+NB(A)={K,F,C}
+NB(E)={B,C,F,D}
+IB(A,E) = {C,F}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PSI
+IA∩IB=IA+B={C}
+NA(A-E)∩NB(E-A)={B}
+NA(E-A)∩NB(A-E)={𝜙}
+
+|CN(A,E)| = 
+|IA| + |IB| - |IA+B|+|{B}|+|{𝜙}|
+= 3
+
+Aida n
+
+Previous Work Done
+Wi am
+
+Liben-Nowell & Kleinberg (2004): The Link Prediction Problem
+Defines link prediction as a formal problem:
+Given a graph snapshot at time t, predict which edges will appear by time t' using only network topology and no node attributes. 
+
+Wi am
+
+
+Ayday et al. (2022): Privacy-Preserving Link Prediction
+
+Two parties (Graph 1, Graph 2) compute Common Neighbours across their joint graphs without revealing their graph to each other (link prediction)
+CN = local1 + local2 + crossover1 + crossover2 - overlap computed using 3 PSI calls 
+Leaks some intermediate values and proposes a heavier homomorphic implementation for zero leakage
+Wi am
+
+Threat Model: Semi-honest adversaries, no third party
+
+Chen, Laine & Rindal (2017): Fast PSI from Homomorphic Encryption
+A high-performance PSI protocol using Fully Homomorphic Encryption (FHE)
+Communication complexity is O(N_small · log N_large)
+While FHE makes it asymptotically efficient, it is not efficient in practice and still leaks minor information
+Wi am
+
+
+Ling et. al (2025): Ultra-Fast Private Set Intersection From Efficient Oblivious Key-Value Stores
+An ultra-fast PSI protocol built upon a novel, bucket-based Oblivious Key-Value Store (OKVS) and Vector Oblivious Linear Evaluation (VOLE)
+Communication complexity is O(n)
+Minimizes network communication overhead compared to previous leading protocols: 30% → 1% redundancy
+Used for our implementation
+Wi am
+
+An ultra-fast Private Set Intersection (PSI) protocol built upon a novel, bucket-based Oblivious Key-Value Store (OKVS) and Vector Oblivious Linear Evaluation (VOLE). It utilizes a Bucket-Based Efficient Gaussian Elimination (BBEGE) algorithm to drastically speed up encoding.
+
+Communication complexity is O(n) (linear with the input size), as the highly efficient OKVS achieves an incredibly low encoding redundancy of just 1% (meaning the encoded size m=1.01n).
+
+This is the state-of-the-art "low-bandwidth" alternative that minimizes network communication overhead compared to previous leading protocols (like RR22, which had 30% redundancy). It comprehensively outperforms existing solutions in constrained network environments (e.g., 10 Mbps WAN) while supporting both semi-honest and malicious security settings.
+
+
+Project Details
+
+We’ll build a Python library that allows anyone to apply privacy preserving link prediction.
+
+Implementation
+This slide should highlight the "hybrid" nature of your library—prioritizing performance through C++ while maintaining accessibility through Python.
+Core Backend (High Performance):
+C++ Engine: Leverages the Ultra-Fast PSI protocol from Ling et al. (2025) which utilizes Vector Oblivious Linear Evaluation (VOLE) and Oblivious Key-Value Stores (OKVS) to achieve $O(n)$ communication complexity.
+Cryptographic Primitives: Optimized implementations of Fully Homomorphic Encryption (FHE) and Lattice-Based Cryptography to minimize communication overhead.
+The Bridge (Python Bindings):
+Pybind11 / Cython: Bridges the C++ backend to a user-friendly Python interface, allowing data scientists to run complex PPLP tasks without writing low-level code
+User Interface (Front-End):Web App Interface: A React or Streamlit-based dashboard that allows users to upload graph snapshots and visualize predicted links.Visualization Engine: Interactive graph rendering to show latent and unobserved connections predicted by the library.
+
+Use Cases I
+Social Networks
+Privacy-First Recommendations
+Discovering latent connections (friend suggestions) between users based on structural similarity across different social graphs without exposing the full contact list of either party.
+Telecommunications
+Targeted Advertising
+An advertiser finds target audience members similar to an existing set ($x$) by performing link prediction on phone networks while keeping the actual call/link records private.
+
+Use Cases II
+E-Commerce
+Collaborative Filtering
+Recommending products to a user based on similarities found between their purchasing graph and those of other "similar" users, without a central server seeing individual transaction histories.
+Bioinformatics
+Secure EHR Research
+Merging Electronic Health Records (EHR) with clustering graphs to predict disease spread or patient diagnoses without revealing sensitive protected health information (PHI).
+
+
+ref.
+Privacy Preserving Link Prediction
+Fast Private Set Intersection from Homomorphic Encryption (PDF)
+Feather: Lightweight Multi-party Updatable Delegated Private Set Intersection
+The Link Prediction Problem for Social Networks
+Lucidchart
+https://github.com/ShallMate/fastpsi – Ultra-Fast Private Set Intersection (PDF)
+
+What slides do we need?
+Introduction / Overview
+Project specification
+Previous Work Done
+PPLP Building Blocks
+HE, PSI, LP Algos/Statistics 
+Adamic-Adar and Jaccard
+Topic and Research
+Auxiliary / Supporting Resources
+End Goal (Python Library)
+Practical applications / use cases (What we will implement 3 applications(?))
+What are they
+How do they implement this topic
+Why is it useful for this specifically / what benefit does this provide
+
+Pro Max Ultra Lightning Fast Privacy Preserving Link Prediction for Iphone 2000 pro max
