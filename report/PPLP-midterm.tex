@@ -78,6 +78,14 @@ Following Ayday et al., for two parties Alice (graph $G_A$) and Bob (graph $G_B$
 \end{itemize}
 The total $|\text{CN}(A,E)|$ is then obtained as $|I_A| + |I_B| - |I_A \cap I_B|$ plus the contributions from the crossover PSI results (e.g., $|I_{A+B}|$ and the sizes of the privately computed crossover intersections). The protocol uses a small, fixed number of PSI calls per candidate pair.
 
+\subsection{Two-Party Node Cardinalities via PSI}
+Similar to above, two parties can find out the combined cardinalities for common nodes between the parties. Assume again, Alice (graph $G_A$) and Bob (graph $G_B$), can first perform PSI on the nodes of the graph to obtain nodes which they could find their cardinalities. Below the steps to determine the combined cardinality of node $A$:
+\begin{itemize}
+  \item Local Cardinalities: $N_A(A)$ and $N_B(A)$ (each party computes locally).
+  \item Intersection Term: $N_A(A) \cap N_B(A)$ which require PSI so that only intersection sizes (or masked sets) are revealed.
+\end{itemize}
+The total $|N_{A+B}(A)|$ is then obtained as $|N_A(A)| + |N_B(A)| - |N_A(A) \cap N_B(A)|$. The protocol uses a single PSI call per node, although an additional PSI call is required to determine which nodes are available to both parties.
+
 \subsection{Privacy Primitives}
 \begin{itemize}
   \item \textbf{Private Set Intersection (PSI):} Core primitive to compute intersections (or their sizes) over neighbor sets without revealing the sets themselves. We plan to base our implementation on the ultra-fast PSI of Ling et al. (OKVS + VOLE) for $O(n)$ communication and low bandwidth.
