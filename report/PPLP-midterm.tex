@@ -4,6 +4,8 @@
 %%
 \documentclass[sigconf]{acmart}
 
+\usepackage{graphicx}
+
 \AtBeginDocument{%
   \providecommand\BibTeX{{Bib\TeX}}}
 
@@ -43,28 +45,36 @@ Link prediction on a single graph is well studied; combining multiple graphs (di
 \subsection{Link Prediction}
 Link prediction aims to discover unobserved or latent connections between nodes in a graph~\cite{liben-nowell2007link}. Given a snapshot of a network at time $t$, the goal is to predict which edges will appear by a future time $t'$ using structural information (e.g., proximity measures or graph neural networks). Applications include social networks, e-commerce, telecommunications, fraud and financial crime detection, and bioinformatics explored in a later section.
 
-Link prediction is typically performed on a single local graph. \textbf{Distributed link prediction} considers the setting where two or more parties hold related graphs (e.g., overlapping node sets or the same domain). Merging these graphs can yield more accurate predictions, but sharing raw graph data raises \textbf{privacy risks}: identity disclosure, link disclosure, and attribute disclosure. We therefore focus on \textbf{privacy-preserving link prediction (PPLP)}: multiple data holders collaboratively compute link-prediction scores over their combined graph \emph{without} revealing their private graph structure to each other.
+Link prediction is typically performed on a single local graph. Distributed link prediction considers the setting where two or more parties hold related graphs (e.g., overlapping node sets or the same domain). Merging these graphs can yield more accurate predictions, but sharing raw graph data raises privacy risks: identity disclosure, link disclosure, and attribute disclosure. We therefore focus on privacy-preserving link prediction (PPLP): multiple data holders collaboratively compute link-prediction scores over their combined graph \emph{without} revealing their private graph structure to each other (Figure~\ref{fig:motivation}).
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=\textwidth]{figures/link_prediction.png}
+  \Description{Two diagrams side by side. Left: siloed data showing Graph A and Graph B each producing separate partial predictions. Right: merged data showing Graph A and Graph B combined via a merge step into an enriched graph yielding enriched predictions.}
+  \caption{Siloed vs.\ merged data. Each party independently produces only partial predictions (left), whereas merging graphs yields an enriched, more accurate result (right), at the cost of privacy without PPLP.}
+  \label{fig:motivation}
+\end{figure*}
 
 \subsection{Related Work}
 
-\textbf{Link prediction.} Liben-Nowell and Kleinberg~\cite{liben-nowell2007link} formalize the link-prediction problem using only network topology (no node attributes) and conduct a study of proximity-based measures on co-authorship networks. Their analysis establishes Common neighbors, Jaccard, and Adamic--Adar as the foundation for topologically driven link prediction that significantly outperform random baselines. This topology framing allows for a set based approach that enables its compatibility with Private Set Intersection (PSI).
+Liben-Nowell and Kleinberg~\cite{liben-nowell2007link} formalize the link-prediction problem using only network topology (no node attributes) and conduct a study of proximity-based measures on co-authorship networks. Their analysis establishes common neighbors, Jaccard, and Adamic--Adar as the foundation for topologically driven link prediction that significantly outperform random baselines. This topology framing allows for a set-based approach that enables compatibility with Private Set Intersection (PSI).
 
-\textbf{Privacy-preserving link prediction.} Ayday et al.~\cite{Demirag2022} gives a two-party protocol in which each party holds a graph; they compute \emph{common neighbor} counts over the union of both graphs using a notably small number of private set intersection (PSI) and additively homomorphic encryption. The common-neighbor count is expressed as local terms plus crossover terms minus overlaps such that only intersection sizes rather than neighbor sets are revealed. They also discuss a heavier homomorphic variant to reduce intermediate leakage where neither party can learn the intermediate intersection sizes before the final output is assembled. Their threat model assumes semi-honest (honest but curious) adversaries and no trusted third party, which is fairly realistic for competitive or regulated settings like cross-institutional healthcare.
+Ayday et al.~\cite{Demirag2022} give a two-party protocol in which each party holds a graph; they compute \emph{common neighbor} counts over the union of both graphs using a notably small number of private set intersection (PSI) and additively homomorphic encryption calls. The common-neighbor count is expressed as local terms plus crossover terms minus overlaps such that only intersection sizes rather than neighbor sets are revealed. They also discuss a heavier homomorphic variant to reduce intermediate leakage where neither party can learn the intermediate intersection sizes before the final output is assembled. Their threat model assumes semi-honest (honest-but-curious) adversaries and no trusted third party, which is realistic for competitive or regulated settings such as cross-institutional healthcare.
 
-\textbf{Private set intersection.} PSI is the core cryptographic primitive enabling the PPLP protocol as it lets two parties compute the intersection of their sets while revealing only the result. Chen et al.~\cite{chen2017fast} give a high-performance PSI protocol from fully homomorphic encryption (FHE) with communication complexity $O(N_{\text{small}} \cdot \log N_{\text{large}})$, making it both cheap and practical. Lattice-based FHE~\cite{gentry2009lattice} made such protocols viable, relevant, and applicable by bootstrapping and solving the noise problem with a decryption circuit. Ling et al.~\cite{ling2025ultrafast} propose an ultra-fast PSI from efficient Oblivious Key-Value Stores (OKVS) and Vector Oblivious Linear Evaluation (VOLE), with $O(n)$ communication and low encoding redundancy (on the order of 1\%) making it significantly faster in practice for large sets than FHE-based PSI. We plan to use for our python library implementation due to its linear communication cost and lower overhead to handle the potentially large graph scales of the various use case domains.
+PSI is the core cryptographic primitive enabling the PPLP protocol, as it lets two parties compute the intersection of their sets while revealing only the result. Chen et al.~\cite{chen2017fast} give a high-performance PSI protocol from fully homomorphic encryption (FHE) with communication complexity $O(N_{\text{small}} \cdot \log N_{\text{large}})$. Lattice-based FHE~\cite{gentry2009lattice} made such protocols practical by bootstrapping and resolving the noise problem with a decryption circuit. Ling et al.~\cite{ling2025ultrafast} propose an ultra-fast PSI from efficient Oblivious Key-Value Stores (OKVS) and Vector Oblivious Linear Evaluation (VOLE), with $O(n)$ communication and low encoding redundancy (on the order of 1\%), making it significantly faster in practice for large sets than FHE-based PSI. We plan to use it for our Python library implementation due to its linear communication cost and lower overhead.
 
 \subsection{Motivating Use Cases}
 Applications span several domains, each presenting distinct graph structures and privacy considerations.
 
-\textbf{Social networks}: PPLP powers friend recommendations by surfacing latent connections between users across a network snapshot. Sharing edge data across multiple networks risks re-identifying pseudonymous users through structural patterns.
+Social networks: PPLP powers friend recommendations by surfacing latent connections between users across a network snapshot. Sharing edge data across multiple networks risks re-identifying pseudonymous users through structural patterns.
 
-\textbf{E-commerce}: PPLP drives product recommendation by predicting new edges in a bipartite user-product graphs built from purchase and interaction history. Multiple retailers may hold overlapping customer bases, but sharing purchase graphs exposes proprietary customer behavior data.
+E-commerce: PPLP drives product recommendation by predicting new edges in a bipartite user-product graph built from purchase and interaction history. Multiple retailers may hold overlapping customer bases, but sharing purchase graphs exposes proprietary customer behavior data.
 
-\textbf{Telecommunications}: PPLP enables targeted advertising by modeling call or message patterns among users. Call graphs reveal associations and routines so sharing them across carriers raises attribute and link disclosure concerns.
+Telecommunications: PPLP enables targeted advertising by modeling call or message patterns among users. Call graphs reveal associations and routines so sharing them across carriers raises attribute and link disclosure concerns.
 
-\textbf{Bioinformatics}: PPLP allows for merging of Electronic Health Records (EHR) with clustering graphs to allow better research and predictions of patient diagnosis, disease spread, drug interactions, and more as derived from clinical and experimental data.
+Bioinformatics: PPLP allows for merging of Electronic Health Records (EHR) with clustering graphs to allow better research and predictions of patient diagnosis, disease spread, drug interactions, and more as derived from clinical and experimental data.
 
-\textbf{Financial networks}: PPLP supports fraud detection by identifying suspicious latent connections between accounts at different institutions through intermediary accounts, which is a marker for money-laundering. Raw graph sharing is largely prohibited by financial privacy regulation, so this could allows banks to more completely observe the transaction subgraph of a potentially criminal organization.
+Financial networks: PPLP supports fraud detection by identifying suspicious latent connections between accounts at different institutions through intermediary accounts, which is a marker for money-laundering. Raw graph sharing is largely prohibited by financial privacy regulation, so this could allow banks to more completely observe the transaction subgraph of a potentially criminal organization.
 
 %=============================================================================
 \section{Planned Methods}
@@ -79,19 +89,50 @@ We will support at least one of the following proximity-based measures, which ca
   \item \textbf{Adamic--Adar (AA):} $\sum_{w \in N(u) \cap N(v)} \frac{1}{\log |N(w)|}$, emphasizing common neighbors with lower degree.
 \end{itemize}
 
+\subsection{Threat Model}
+We assume a two-party, semi-honest (honest-but-curious) adversary model. Both Alice and Bob execute the protocol steps faithfully; they do not deviate, send malformed inputs, or abort early. However, each party attempts to infer as much as possible about the other's private graph from the protocol messages they legitimately receive. Each party enters the protocol knowing its own graph in full, the set of candidate node pairs for which link scores are being computed, and the public protocol specification.
+
+The PSI calls expose only the \emph{sizes} of intersection sets (e.g., $|I_{A+B}|$ and the crossover intersection sizes), not the sets themselves. The final output, i.e., the common-neighbor count for each candidate pair, is learned by both parties. Neither party should learn the other's raw neighbor sets: Alice must not learn $N_B(u)$ for any node $u$, and Bob must not learn $N_A(u)$.
+
+The basic protocol leaks intermediate intersection sizes, which may allow inferences about the other party's graph degree distribution. Ayday et al.\ propose a heavier homomorphic variant that eliminates even this leakage; we plan to explore this as an extension (Section~3). Malicious adversaries, party collusion, side-channel attacks, and settings with more than two parties are out of scope for the initial prototype.
+
 \subsection{Two-Party Common Neighbors via PSI}
-Following Ayday et al., for two parties Alice (graph $G_A$) and Bob (graph $G_B$), the common-neighbor count for a candidate pair $(A,E)$ can be decomposed into:
+Following Ayday et al., for two parties Alice (graph $G_A$) and Bob (graph $G_B$), the common-neighbor count for a candidate pair $(A,E)$ can be decomposed into the following local and crossover terms. Figure~\ref{fig:graph-union} shows a concrete example where Alice holds $G_A$ over nodes $\{A,B,C,D,E,G,H\}$ and Bob holds $G_B$ over nodes $\{A,B,C,D,E,K,F\}$, with the two graphs sharing the node subset $\{A,B,C,D,E\}$.
 \begin{itemize}
   \item Local intersections: $I_A(A,E) = N_A(A) \cap N_A(E)$ and $I_B(A,E) = N_B(A) \cap N_B(E)$ (each party computes locally).
   \item Crossover terms: e.g., $N_A(A) \setminus I_A$ with $N_B(E) \setminus I_B$, etc., which require PSI so that only intersection sizes (or masked sets) are revealed.
 \end{itemize}
-The total $|\text{CN}(A,E)|$ is then obtained as $|I_A| + |I_B| - |I_A \cap I_B|$ plus the contributions from the crossover PSI results (e.g., $|I_{A+B}|$ and the sizes of the privately computed crossover intersections). The protocol uses a small, fixed number of PSI calls per candidate pair.
+The total $|\text{CN}(A,E)|$ is then obtained as $|I_A| + |I_B| - |I_A \cap I_B|$ plus the contributions from the crossover PSI results (e.g., $|I_{A+B}|$ and the sizes of the privately computed crossover intersections). The protocol uses a small, fixed number of PSI calls per candidate pair. Figures~\ref{fig:applying-psi} and~\ref{fig:cn-result} walk through this computation on the running example.
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=\textwidth]{figures/distributed_link_prediction.png}
+  \Description{Three graphs shown left to right with a plus sign and an equals sign between them. The left graph (Alice) has nodes A, B, C, D, E, G, H. The center graph (Bob) has nodes A, B, C, D, E, K, F. The right graph shows their union with all nodes combined.}
+  \caption{Two-party graph union. Alice's graph $G_A$ (left) and Bob's graph $G_B$ (center) share overlapping node set $\{A,B,C,D,E\}$; their union (right) contains additional nodes $G$, $H$ from Alice and $K$, $F$ from Bob.}
+  \label{fig:graph-union}
+\end{figure*}
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=\textwidth]{figures/applying_psi.png}
+  \Description{Side-by-side diagrams of Alice's graph and Bob's graph for candidate pair (A,E). Each party's local neighbor sets and local intersections are shown below their graph. A central PSI box shows three crossover intersection results computed privately.}
+  \caption{Applying PSI for candidate pair $(A,E)$. Alice and Bob first compute local intersections $I_A$ and $I_B$ independently. Three PSI calls then privately resolve the crossover terms: $I_A \cap I_B = \{C\}$, $N_A(A\text{-}E) \cap N_B(E\text{-}A) = \{B\}$, and $N_A(E\text{-}A) \cap N_B(A\text{-}E) = \emptyset$.}
+  \label{fig:applying-psi}
+\end{figure*}
+
+\begin{figure*}
+  \centering
+  \includegraphics[width=\textwidth]{figures/size_of_cn.png}
+  \Description{Alice's and Bob's graphs for pair (A,E) with all neighbor sets and local intersections listed below each graph. A top banner shows the formula |CN(A,E)| = |I_A| + |I_B| - |I_{A+B}| + |{B}| + |{phi}| = 3. A central PSI box shows the three crossover results.}
+  \caption{Computing $|\text{CN}(A,E)|$. Combining local terms $|I_A|{=}1$ and $|I_B|{=}2$ with the PSI-computed crossover results yields $|\text{CN}(A,E)| = 1 + 2 - 1 + 1 + 0 = 3$.}
+  \label{fig:cn-result}
+\end{figure*}
 
 \subsection{Two-Party Node Cardinalities via PSI}
-Similar to Common Neighbors, two parties can find out the combined cardinalities for common nodes between the parties. Assume again, Alice (graph $G_A$) and Bob (graph $G_B$), can first perform PSI on the nodes of the graph to obtain nodes which they could find their cardinalities. Below the steps to determine the combined cardinality of node $A$:
+Similar to Common Neighbors, two parties can find out the combined cardinalities for common nodes between the parties. Assume again that Alice (graph $G_A$) and Bob (graph $G_B$) first perform PSI on the node sets of their graphs to determine which nodes they share, then compute combined cardinalities for those shared nodes. Below are the steps to determine the combined cardinality of node $A$:
 \begin{itemize}
   \item Local Cardinalities: $N_A(A)$ and $N_B(A)$ (each party computes locally).
-  \item Intersection Term: $N_A(A) \cap N_B(A)$ which require PSI so that only intersection sizes (or masked sets) are revealed.
+  \item Intersection Term: $N_A(A) \cap N_B(A)$, which requires PSI so that only the intersection size (or masked set) is revealed.
 \end{itemize}
 The total $|N_{A+B}(A)|$ is then obtained as $|N_A(A)| + |N_B(A)| - |N_A(A) \cap N_B(A)|$. The protocol uses a single PSI call per node, although an additional PSI call is required to determine which nodes are available to both parties.
 
@@ -127,10 +168,10 @@ The total $|N_{A+B}(A)|$ is then obtained as $|N_A(A)| + |N_B(A)| - |N_A(A) \cap
 We aim to deliver:
 
 \begin{itemize}
-  \item An \textbf{integrable Python library} that allows users to run privacy-preserving link prediction on distributed graphs with a clear, documented API.
-  \item \textbf{Support for at least the Common Neighbors} measure in the two-party setting, with the option to extend to Jaccard and Adamic--Adar.
-  \item \textbf{Example use cases} (e.g., social networks, telecommunications, or e-commerce) demonstrating how to supply graphs and obtain link scores or recommendations without sharing raw graph data.
-  \item Optionally, a \textbf{web dashboard} for uploading graphs and visualizing predicted links.
+  \item An integrable Python library that allows users to run privacy-preserving link prediction on distributed graphs with a clear, documented API.
+  \item Support for at least the Common Neighbors measure in the two-party setting, with the option to extend to Jaccard and Adamic--Adar.
+  \item Example use cases (e.g., social networks, telecommunications, or e-commerce) demonstrating how to supply graphs and obtain link scores or recommendations without sharing raw graph data.
+  \item Optionally, a web dashboard for uploading graphs and visualizing predicted links.
 \end{itemize}
 
 Success is measured by: (1) correctness of the protocol (matching non-private common-neighbor counts where applicable), (2) practical runtime and communication cost, and (3) usability for developers who wish to integrate PPLP into their own applications.
