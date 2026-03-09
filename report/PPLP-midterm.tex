@@ -18,12 +18,8 @@
 
 \title{PPLP: Privacy-Preserving Link Prediction}
 
-\author{Kaleb Kim}
-\author{Wiam Skakri}
-\author{Carson Whitehouse}
-\author{Jonah Lorenzo}
-\author{Kent Manion}
-\author{Aidan Bugayong}
+\author{Kaleb Kim, Wiam Skakri, Carson Whitehouse, Jonah Lorenzo}
+\author{Kent Manion, and Aidan Bugayong}
 \affiliation{%
   \institution{Case Western Reserve University}
   \city{Cleveland}
@@ -45,17 +41,30 @@ Link prediction on a single graph is well studied; combining multiple graphs (di
 %=============================================================================
 
 \subsection{Link Prediction}
-Link prediction aims to discover unobserved or latent connections between nodes in a graph~\cite{liben-nowell2007link}. Given a snapshot of a network at time $t$, the goal is to predict which edges will appear by a future time $t'$ using structural information (e.g., proximity measures or graph neural networks). Applications include friend recommendation in social networks, product recommendation in e-commerce, planning in telecommunications, and association discovery in bioinformatics.
+Link prediction aims to discover unobserved or latent connections between nodes in a graph~\cite{liben-nowell2007link}. Given a snapshot of a network at time $t$, the goal is to predict which edges will appear by a future time $t'$ using structural information (e.g., proximity measures or graph neural networks). Applications include social networks, e-commerce, telecommunications, fraud and financial crime detection, and bioinformatics explored in a later section.
 
 Link prediction is typically performed on a single local graph. \textbf{Distributed link prediction} considers the setting where two or more parties hold related graphs (e.g., overlapping node sets or the same domain). Merging these graphs can yield more accurate predictions, but sharing raw graph data raises \textbf{privacy risks}: identity disclosure, link disclosure, and attribute disclosure. We therefore focus on \textbf{privacy-preserving link prediction (PPLP)}: multiple data holders collaboratively compute link-prediction scores over their combined graph \emph{without} revealing their private graph structure to each other.
 
 \subsection{Related Work}
 
-\textbf{Link prediction.} Liben-Nowell and Kleinberg~\cite{liben-nowell2007link} formalize the link-prediction problem using only network topology (no node attributes) and study proximity-based measures such as common neighbors, Jaccard, and Adamic--Adar.
+\textbf{Link prediction.} Liben-Nowell and Kleinberg~\cite{liben-nowell2007link} formalize the link-prediction problem using only network topology (no node attributes) and conduct a study of proximity-based measures on co-authorship networks. Their analysis establishes Common neighbors, Jaccard, and Adamic--Adar as the foundation for topologically driven link prediction that significantly outperform random baselines. This topology framing allows for a set based approach that enables its compatibility with Private Set Intersection (PSI).
 
-\textbf{Privacy-preserving link prediction.} Ayday et al.~\cite{Demirag2022} give a two-party protocol in which each party holds a graph; they compute \emph{common neighbors} over the union of both graphs using private set intersection (PSI) and additively homomorphic encryption. The common-neighbor count is expressed as local terms plus crossover terms minus overlaps, computed with a small number of PSI calls. Their threat model assumes semi-honest adversaries and no trusted third party. They also discuss a heavier homomorphic variant to reduce intermediate leakage.
+\textbf{Privacy-preserving link prediction.} Ayday et al.~\cite{Demirag2022} gives a two-party protocol in which each party holds a graph; they compute \emph{common neighbor} counts over the union of both graphs using a notably small number of private set intersection (PSI) and additively homomorphic encryption. The common-neighbor count is expressed as local terms plus crossover terms minus overlaps such that only intersection sizes rather than neighbor sets are revealed. They also discuss a heavier homomorphic variant to reduce intermediate leakage where neither party can learn the intermediate intersection sizes before the final output is assembled. Their threat model assumes semi-honest (honest but curious) adversaries and no trusted third party, which is fairly realistic for competitive or regulated settings like cross-institutional healthcare.
 
-\textbf{Private set intersection.} PSI lets two parties compute the intersection of their sets while revealing only the result. Chen et al.~\cite{chen2017fast} give a high-performance PSI protocol from fully homomorphic encryption (FHE) with communication complexity $O(N_{\text{small}} \cdot \log N_{\text{large}})$. Lattice-based FHE~\cite{gentry2009lattice} made such protocols practically relevant. Ling et al.~\cite{ling2025ultrafast} propose an ultra-fast PSI from efficient Oblivious Key-Value Stores (OKVS) and Vector Oblivious Linear Evaluation (VOLE), with $O(n)$ communication and very low encoding redundancy (on the order of 1\%), which we plan to use for our implementation.
+\textbf{Private set intersection.} PSI is the core cryptographic primitive enabling the PPLP protocol as it lets two parties compute the intersection of their sets while revealing only the result. Chen et al.~\cite{chen2017fast} give a high-performance PSI protocol from fully homomorphic encryption (FHE) with communication complexity $O(N_{\text{small}} \cdot \log N_{\text{large}})$, making it both cheap and practical. Lattice-based FHE~\cite{gentry2009lattice} made such protocols viable, relevant, and applicable by bootstrapping and solving the noise problem with a decryption circuit. Ling et al.~\cite{ling2025ultrafast} propose an ultra-fast PSI from efficient Oblivious Key-Value Stores (OKVS) and Vector Oblivious Linear Evaluation (VOLE), with $O(n)$ communication and low encoding redundancy (on the order of 1\%) making it significantly faster in practice for large sets than FHE-based PSI. We plan to use for our python library implementation due to its linear communication cost and lower overhead to handle the potentially large graph scales of the various use case domains.
+
+\subsection{Motivating Use Cases}
+Applications span several domains, each presenting distinct graph structures and privacy considerations.
+
+\textbf{Social networks}: PPLP powers friend recommendations by surfacing latent connections between users across a network snapshot. Sharing edge data across multiple networks risks re-identifying pseudonymous users through structural patterns.
+
+\textbf{E-commerce}: PPLP drives product recommendation by predicting new edges in a bipartite user-product graphs built from purchase and interaction history. Multiple retailers may hold overlapping customer bases, but sharing purchase graphs exposes proprietary customer behavior data.
+
+\textbf{Telecommunications}: PPLP enables targeted advertising by modeling call or message patterns among users. Call graphs reveal associations and routines so sharing them across carriers raises attribute and link disclosure concerns.
+
+\textbf{Bioinformatics}: PPLP allows for merging of Electronic Health Records (EHR) with clustering graphs to allow better research and predictions of patient diagnosis, disease spread, drug interactions, and more as derived from clinical and experimental data.
+
+\textbf{Financial networks}: PPLP supports fraud detection by identifying suspicious latent connections between accounts at different institutions through intermediary accounts, which is a marker for money-laundering. Raw graph sharing is largely prohibited by financial privacy regulation, so this could allows banks to more completely observe the transaction subgraph of a potentially criminal organization.
 
 %=============================================================================
 \section{Planned Methods}
@@ -79,7 +88,7 @@ Following Ayday et al., for two parties Alice (graph $G_A$) and Bob (graph $G_B$
 The total $|\text{CN}(A,E)|$ is then obtained as $|I_A| + |I_B| - |I_A \cap I_B|$ plus the contributions from the crossover PSI results (e.g., $|I_{A+B}|$ and the sizes of the privately computed crossover intersections). The protocol uses a small, fixed number of PSI calls per candidate pair.
 
 \subsection{Two-Party Node Cardinalities via PSI}
-Similar to above, two parties can find out the combined cardinalities for common nodes between the parties. Assume again, Alice (graph $G_A$) and Bob (graph $G_B$), can first perform PSI on the nodes of the graph to obtain nodes which they could find their cardinalities. Below the steps to determine the combined cardinality of node $A$:
+Similar to Common Neighbors, two parties can find out the combined cardinalities for common nodes between the parties. Assume again, Alice (graph $G_A$) and Bob (graph $G_B$), can first perform PSI on the nodes of the graph to obtain nodes which they could find their cardinalities. Below the steps to determine the combined cardinality of node $A$:
 \begin{itemize}
   \item Local Cardinalities: $N_A(A)$ and $N_B(A)$ (each party computes locally).
   \item Intersection Term: $N_A(A) \cap N_B(A)$ which require PSI so that only intersection sizes (or masked sets) are revealed.
@@ -104,7 +113,7 @@ The total $|N_{A+B}(A)|$ is then obtained as $|N_A(A)| + |N_B(A)| - |N_A(A) \cap
 %=============================================================================
 
 \begin{enumerate}
-  \item Integrate or implement the ultra-fast PSI protocol (Ling et al.) and verify correctness and performance in our setting.
+  \item Integrate and implement the ultra-fast PSI protocol (Ling et al.) and verify its correctness and performance for our setting.
   \item Implement the two-party common-neighbor protocol (and optionally Jaccard and Adamic--Adar) using a fixed number of PSI calls per node pair as in Ayday et al.
   \item Design and implement the Python API (graph input, parameterization, and output of link scores or top-$k$ predictions).
   \item Set up multi-machine communication (separate endpoints for each party) so that two instances of the library can run on different computers and execute the PPLP protocol.
