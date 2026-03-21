@@ -1,0 +1,51 @@
+site_name: PPLP
+site_url: https://khicken.github.io/pplp-lib/
+site_description: Privacy-Preserving Link Prediction — compute Common Neighbors across distributed graphs without revealing private edges.
+site_author: Kaleb Kim, Wiam Skakri, Carson Whitehouse, Jonah Lorenzo, Kent Manion, Aidan Bugayong
+repo_url: https://github.com/khicken/pplp-lib
+repo_name: khicken/pplp-lib
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.sections
+    - content.code.copy
+    - toc.follow
+
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - API Reference: api.md
+  - Protocol: protocol.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/khicken/pplp-lib

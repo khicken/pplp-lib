@@ -1,0 +1,26 @@
+[project]
+name = "pplp"
+version = "0.1.0"
+description = "Privacy-preserving link prediction library"
+requires-python = ">=3.9"
+dependencies = [
+    "openmined-psi>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lib/pplp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "mkdocs-material>=9.7.6",
+]
