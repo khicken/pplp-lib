@@ -360,10 +360,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#building-graphs" class="md-nav__link">
+  <a href="#setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Building graphs
+        Setup
       
     </span>
   </a>
@@ -371,10 +371,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#computing-common-neighbors" class="md-nav__link">
+  <a href="#party-2-start-the-server" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Computing Common Neighbors
+        Party 2: start the server
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#party-1-run-the-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Party 1: run the query
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building graphs
       
     </span>
   </a>
@@ -421,32 +443,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#querying-the-graph" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Querying the graph
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#whats-happening-under-the-hood" class="md-nav__link">
     <span class="md-ellipsis">
       
         What's happening under the hood
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#distributed-use-two-machines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Distributed use (two machines)
       
     </span>
   </a>
@@ -553,10 +553,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#building-graphs" class="md-nav__link">
+  <a href="#setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Building graphs
+        Setup
       
     </span>
   </a>
@@ -564,10 +564,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#computing-common-neighbors" class="md-nav__link">
+  <a href="#party-2-start-the-server" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Computing Common Neighbors
+        Party 2: start the server
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#party-1-run-the-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Party 1: run the query
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building graphs
       
     </span>
   </a>
@@ -614,32 +636,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#querying-the-graph" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Querying the graph
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#whats-happening-under-the-hood" class="md-nav__link">
     <span class="md-ellipsis">
       
         What's happening under the hood
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#distributed-use-two-machines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Distributed use (two machines)
       
     </span>
   </a>
@@ -670,103 +670,89 @@
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pplp
 </code></pre></div>
-<p>Or with <code>uv</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>add<span class="w"> </span>pplp
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
+<p>Each party installs <code>pplp</code> independently on their own machine. Node IDs must match across both graphs (e.g., both use email addresses or phone numbers for shared nodes).</p>
+<h2 id="party-2-start-the-server">Party 2: start the server<a class="headerlink" href="#party-2-start-the-server" title="Permanent link">&para;</a></h2>
+<p>Party 2 prepares a CSV edge list (no header, one edge per line) and starts the server:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Alice,Bob
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Alice,Charlie
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Bob,Dave
 </code></pre></div>
-<h2 id="building-graphs">Building graphs<a class="headerlink" href="#building-graphs" title="Permanent link">&para;</a></h2>
-<p>Each party constructs a <code>Graph</code> from their private data:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pplp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># From an edge list</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">),</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;charlie&quot;</span><span class="p">),</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="p">(</span><span class="s2">&quot;bob&quot;</span><span class="p">,</span> <span class="s2">&quot;dave&quot;</span><span class="p">),</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">])</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Or build incrementally</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;charlie&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pplp-server<span class="w"> </span>party2_graph.csv<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
 </code></pre></div>
-<p>Node IDs are strings. Both parties must agree on the same identifiers (e.g., email addresses, phone numbers) for shared nodes.</p>
-<h2 id="computing-common-neighbors">Computing Common Neighbors<a class="headerlink" href="#computing-common-neighbors" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pplp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">compute_cn</span><span class="p">,</span> <span class="n">DirectLinkFound</span>
+<p>Options:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--host</code></td>
+<td><code>0.0.0.0</code></td>
+<td>Bind address</td>
+</tr>
+<tr>
+<td><code>--port</code></td>
+<td><code>8000</code></td>
+<td>Port</td>
+</tr>
+</tbody>
+</table>
+<h2 id="party-1-run-the-query">Party 1: run the query<a class="headerlink" href="#party-1-run-the-query" title="Permanent link">&para;</a></h2>
+<p>Party 1 builds their graph in Python and connects to Party 2's server:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pplp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">compute_cn_remote</span><span class="p">,</span> <span class="n">party2_client</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Party 1&#39;s graph</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">graph1</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">),</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">),</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">])</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># Party 2&#39;s graph</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">graph2</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">),</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">),</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">])</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="c1"># How many common neighbors do A and E have across both graphs?</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="n">cn</span> <span class="o">=</span> <span class="n">compute_cn</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">graph2</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>  <span class="c1"># 3</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">graph1</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Bob&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Charlie&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Grace&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Henry&quot;</span><span class="p">),</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="p">(</span><span class="s2">&quot;Eve&quot;</span><span class="p">,</span> <span class="s2">&quot;Charlie&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;Eve&quot;</span><span class="p">,</span> <span class="s2">&quot;Diana&quot;</span><span class="p">),</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">])</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">with</span> <span class="n">party2_client</span><span class="p">(</span><span class="s2">&quot;http://&lt;party2-ip&gt;:8000&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">cn</span> <span class="o">=</span> <span class="n">compute_cn_remote</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Eve&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Common Neighbors: </span><span class="si">{</span><span class="n">cn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p><code>graph1</code> is the <strong>client</strong> (learns the result). <code>graph2</code> is the <strong>server</strong> (learns nothing). This asymmetry follows the paper's protocol.</p>
+<p>Only Party 1 learns the result. Party 2's graph structure is never revealed.</p>
+<h2 id="building-graphs">Building graphs<a class="headerlink" href="#building-graphs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pplp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># From an edge list</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">),</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;charlie&quot;</span><span class="p">),</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="p">(</span><span class="s2">&quot;bob&quot;</span><span class="p">,</span> <span class="s2">&quot;dave&quot;</span><span class="p">),</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">])</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># Or incrementally</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;charlie&quot;</span><span class="p">)</span>
+</code></pre></div>
 <h2 id="handling-edge-cases">Handling edge cases<a class="headerlink" href="#handling-edge-cases" title="Permanent link">&para;</a></h2>
 <h3 id="direct-neighbors">Direct neighbors<a class="headerlink" href="#direct-neighbors" title="Permanent link">&para;</a></h3>
 <p>If the candidate pair is already directly connected, there's no need for link prediction:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">cn</span> <span class="o">=</span> <span class="n">compute_cn</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">graph2</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="c1"># A and E are already direct neighbors in graph1</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Already connected in your graph&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">except</span> <span class="n">DirectLinkFound</span><span class="p">:</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="c1"># A and E are direct neighbors in graph2</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="c1"># This is stronger evidence than a CN score</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Direct link exists in the other party&#39;s graph&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">cn</span> <span class="o">=</span> <span class="n">compute_cn_remote</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Eve&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="c1"># Alice and Eve are already direct neighbors in Party 1&#39;s graph</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Already connected in your graph&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">except</span> <span class="n">DirectLinkFound</span><span class="p">:</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="c1"># Alice and Eve are direct neighbors in Party 2&#39;s graph</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Direct link exists in the other party&#39;s graph&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="missing-nodes">Missing nodes<a class="headerlink" href="#missing-nodes" title="Permanent link">&para;</a></h3>
-<p>If a node doesn't exist in one of the graphs, its neighbor set is treated as empty. The protocol still works — you just get zero contribution from that graph for that node.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Node &quot;B&quot; only exists in graph1</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">graph1</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)])</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">graph2</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">)])</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">cn</span> <span class="o">=</span> <span class="n">compute_cn</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">graph2</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>  <span class="c1"># returns 1 (only C)</span>
-</code></pre></div>
-<h2 id="querying-the-graph">Querying the graph<a class="headerlink" href="#querying-the-graph" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)])</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">graph</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>              <span class="c1"># {&quot;B&quot;, &quot;C&quot;}</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">graph</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>          <span class="c1"># True</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">graph</span><span class="o">.</span><span class="n">local_intersection</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">)</span>  <span class="c1"># {&quot;C&quot;} — common neighbors within this graph</span>
-</code></pre></div>
+<p>If a node doesn't exist in one graph, its neighbor set is treated as empty — the protocol still works, you just get zero contribution from that side.</p>
 <h2 id="whats-happening-under-the-hood">What's happening under the hood<a class="headerlink" href="#whats-happening-under-the-hood" title="Permanent link">&para;</a></h2>
-<p>For a candidate pair (x, y), <code>compute_cn</code> runs the Demirag/Ayday et al. protocol:</p>
+<p>For a candidate pair (x, y), <code>compute_cn_remote</code> runs the Demirag/Ayday et al. protocol over HTTP:</p>
 <ol>
-<li>Each party computes their <strong>local</strong> common neighbors of x and y</li>
-<li>Three <strong>PSI-cardinality</strong> calls reveal only the <em>sizes</em> of crossover intersections</li>
-<li>The result combines: <code>CN = local1 + local2 + crossover1 + crossover2 - overlap</code></li>
+<li>Party 1 calls <code>/prepare</code> — Party 2 checks for a direct link and returns its local intersection size</li>
+<li>Three <strong>PSI-cardinality</strong> calls (each a pair of HTTP round-trips to <code>/psi/{id}/setup</code> and <code>/psi/{id}/respond</code>) reveal only the <em>sizes</em> of crossover intersections</li>
+<li>Party 1 combines: <code>CN = local1 + local2 + crossover1 + crossover2 - overlap</code></li>
 </ol>
-<p>No raw neighbor sets are ever exchanged — only encrypted intersection sizes via the <a href="https://github.com/OpenMined/PSI">OpenMined PSI</a> library (ECDH-based, cardinality-only mode).</p>
-<h2 id="distributed-use-two-machines">Distributed use (two machines)<a class="headerlink" href="#distributed-use-two-machines" title="Permanent link">&para;</a></h2>
-<p>In a real deployment each party runs on a separate machine. Party 2 starts a server; Party 1 connects to it over HTTP. No raw graph data is exchanged.</p>
-<p><strong>Machine 2 (Party 2):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pplp
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>pplp-server<span class="w"> </span>party2_graph.csv<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
-</code></pre></div>
-<p>The CSV is a two-column, no-header edge list:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Alice,Bob
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Alice,Charlie
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Bob,Dave
-</code></pre></div>
-<p><strong>Machine 1 (Party 1):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pplp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">compute_cn_remote</span><span class="p">,</span> <span class="n">party2_client</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">graph1</span> <span class="o">=</span> <span class="n">Graph</span><span class="o">.</span><span class="n">from_edge_list</span><span class="p">([</span><span class="o">...</span><span class="p">])</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="k">with</span> <span class="n">party2_client</span><span class="p">(</span><span class="s2">&quot;http://&lt;machine2-ip&gt;:8000&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="n">cn</span> <span class="o">=</span> <span class="n">compute_cn_remote</span><span class="p">(</span><span class="n">graph1</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Bob&quot;</span><span class="p">)</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Common Neighbors: </span><span class="si">{</span><span class="n">cn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p><code>compute_cn_remote</code> runs the same Ayday et al. protocol as <code>compute_cn</code> — three PSI calls — but each call is a pair of HTTP round-trips to Party 2's server. Party 2 never learns Party 1's graph; Party 1 never learns Party 2's graph.</p>
+<p>No raw neighbor sets are ever exchanged. See <a href="../protocol/">Protocol Details</a> for the full breakdown.</p>
 
 
 
