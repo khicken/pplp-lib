@@ -6,15 +6,51 @@
 pip install pplp
 ```
 
-Or with `uv`:
+## Setup
 
-```bash
-uv add pplp
+Each party installs `pplp` independently on their own machine. Node IDs must match across both graphs (e.g., both use email addresses or phone numbers for shared nodes).
+
+## Party 2: start the server
+
+Party 2 prepares a CSV edge list (no header, one edge per line) and starts the server:
+
+```
+Alice,Bob
+Alice,Charlie
+Bob,Dave
 ```
 
-## Building graphs
+```bash
+pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
+```
 
-Each party constructs a `Graph` from their private data:
+Options:
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--host` | `0.0.0.0` | Bind address |
+| `--port` | `8000` | Port |
+
+## Party 1: run the query
+
+Party 1 builds their graph in Python and connects to Party 2's server:
+
+```python
+from pplp import Graph, compute_cn_remote, party2_client
+
+graph1 = Graph.from_edge_list([
+    ("Alice", "Bob"), ("Alice", "Charlie"), ("Alice", "Grace"), ("Alice", "Henry"),
+    ("Eve", "Charlie"), ("Eve", "Diana"),
+])
+
+with party2_client("http://<party2-ip>:8000") as client:
+    cn = compute_cn_remote(graph1, client, "Alice", "Eve")
+    print(f"Common Neighbors: {cn}")
+```
+
+Only Party 1 learns the result. Party 2's graph structure is never revealed.
+
+## Building graphs
 
 ```python
 from pplp import Graph
@@ -26,37 +62,11 @@ graph = Graph.from_edge_list([
     ("bob", "dave"),
 ])
 
-# Or build incrementally
+# Or incrementally
 graph = Graph()
 graph.add_edge("alice", "bob")
 graph.add_edge("alice", "charlie")
 ```
-
-Node IDs are strings. Both parties must agree on the same identifiers (e.g., email addresses, phone numbers) for shared nodes.
-
-## Computing Common Neighbors
-
-```python
-from pplp import Graph, compute_cn, DirectLinkFound
-
-# Party 1's graph
-graph1 = Graph.from_edge_list([
-    ("A", "B"), ("A", "C"), ("A", "G"), ("A", "H"),
-    ("E", "C"), ("E", "D"),
-])
-
-# Party 2's graph
-graph2 = Graph.from_edge_list([
-    ("A", "C"), ("A", "F"), ("A", "K"),
-    ("E", "B"), ("E", "C"), ("E", "D"), ("E", "F"),
-])
-
-# How many common neighbors do A and E have across both graphs?
-cn = compute_cn(graph1, graph2, "A", "E")
-print(cn)  # 3
-```
-
-`graph1` is the **client** (learns the result). `graph2` is the **server** (learns nothing). This asymmetry follows the paper's protocol.
 
 ## Handling edge cases
 
@@ -66,77 +76,25 @@ If the candidate pair is already directly connected, there's no need for link pr
 
 ```python
 try:
-    cn = compute_cn(graph1, graph2, "A", "E")
+    cn = compute_cn_remote(graph1, client, "Alice", "Eve")
 except ValueError:
-    # A and E are already direct neighbors in graph1
+    # Alice and Eve are already direct neighbors in Party 1's graph
     print("Already connected in your graph")
 except DirectLinkFound:
-    # A and E are direct neighbors in graph2
-    # This is stronger evidence than a CN score
+    # Alice and Eve are direct neighbors in Party 2's graph
     print("Direct link exists in the other party's graph")
 ```
 
 ### Missing nodes
 
-If a node doesn't exist in one of the graphs, its neighbor set is treated as empty. The protocol still works — you just get zero contribution from that graph for that node.
-
-```python
-# Node "B" only exists in graph1
-graph1 = Graph.from_edge_list([("A", "C"), ("B", "C")])
-graph2 = Graph.from_edge_list([("A", "D")])
-
-cn = compute_cn(graph1, graph2, "A", "B")  # returns 1 (only C)
-```
-
-## Querying the graph
-
-```python
-graph = Graph.from_edge_list([("A", "B"), ("A", "C"), ("B", "C")])
-
-graph.neighbors("A")              # {"B", "C"}
-graph.has_edge("A", "B")          # True
-graph.local_intersection("A", "B")  # {"C"} — common neighbors within this graph
-```
+If a node doesn't exist in one graph, its neighbor set is treated as empty — the protocol still works, you just get zero contribution from that side.
 
 ## What's happening under the hood
 
-For a candidate pair (x, y), `compute_cn` runs the Demirag/Ayday et al. protocol:
+For a candidate pair (x, y), `compute_cn_remote` runs the Demirag/Ayday et al. protocol over HTTP:
 
-1. Each party computes their **local** common neighbors of x and y
-2. Three **PSI-cardinality** calls reveal only the *sizes* of crossover intersections
-3. The result combines: `CN = local1 + local2 + crossover1 + crossover2 - overlap`
+1. Party 1 calls `/prepare` — Party 2 checks for a direct link and returns its local intersection size
+2. Three **PSI-cardinality** calls (each a pair of HTTP round-trips to `/psi/{id}/setup` and `/psi/{id}/respond`) reveal only the *sizes* of crossover intersections
+3. Party 1 combines: `CN = local1 + local2 + crossover1 + crossover2 - overlap`
 
-No raw neighbor sets are ever exchanged — only encrypted intersection sizes via the [OpenMined PSI](https://github.com/OpenMined/PSI) library (ECDH-based, cardinality-only mode).
-
-## Distributed use (two machines)
-
-In a real deployment each party runs on a separate machine. Party 2 starts a server; Party 1 connects to it over HTTP. No raw graph data is exchanged.
-
-**Machine 2 (Party 2):**
-
-```bash
-pip install pplp
-pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
-```
-
-The CSV is a two-column, no-header edge list:
-
-```
-Alice,Bob
-Alice,Charlie
-Bob,Dave
-```
-
-**Machine 1 (Party 1):**
-
-```python
-from pplp import Graph, compute_cn_remote, party2_client
-
-graph1 = Graph.from_edge_list([...])
-
-with party2_client("http://<machine2-ip>:8000") as client:
-    cn = compute_cn_remote(graph1, client, "Alice", "Bob")
-    print(f"Common Neighbors: {cn}")
-```
-
-`compute_cn_remote` runs the same Ayday et al. protocol as `compute_cn` — three PSI calls — but each call is a pair of HTTP round-trips to Party 2's server. Party 2 never learns Party 1's graph; Party 1 never learns Party 2's graph.
+No raw neighbor sets are ever exchanged. See [Protocol Details](protocol.md) for the full breakdown.
