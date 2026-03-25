@@ -87,6 +87,56 @@ Compute the Common Neighbors count for the candidate pair `(x, y)` across the jo
 
 ---
 
+## `compute_cn_remote`
+
+```python
+from pplp import compute_cn_remote
+```
+
+### `compute_cn_remote(graph1, party2_client, x, y)`
+
+Distributed version of `compute_cn`. Party 1 holds `graph1` locally; Party 2 runs a remote HTTP server. The same Ayday et al. protocol is used — three PSI-cardinality calls — but each call is a pair of HTTP round-trips to Party 2's server.
+
+**Parameters:**
+
+- `graph1` — `Graph` — Party 1's private graph
+- `party2_client` — `httpx.Client` (or compatible) — HTTP client pointed at Party 2's server, e.g. from `party2_client()`
+- `x` — `str` — first node in the candidate pair
+- `y` — `str` — second node in the candidate pair
+
+**Returns:** `int` — the Common Neighbors count on the joint graph
+
+**Raises:**
+
+- `ValueError` — if `x` and `y` are direct neighbors in `graph1`
+- `DirectLinkFound` — if `x` and `y` are direct neighbors in `graph2` (reported by Party 2 via `/prepare`)
+
+---
+
+## `party2_client`
+
+```python
+from pplp import party2_client
+```
+
+### `party2_client(base_url, timeout=30.0)`
+
+Context manager that yields an `httpx.Client` configured to talk to Party 2's server. Use this with `compute_cn_remote`.
+
+**Parameters:**
+
+- `base_url` — `str` — base URL of Party 2's server, e.g. `"http://192.168.1.10:8000"`
+- `timeout` — `float` — request timeout in seconds (default 30)
+
+**Example:**
+
+```python
+with party2_client("http://192.168.1.10:8000") as client:
+    cn = compute_cn_remote(graph1, client, "A", "E")
+```
+
+---
+
 ## `DirectLinkFound`
 
 ```python

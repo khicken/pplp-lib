@@ -108,5 +108,35 @@ For a candidate pair (x, y), `compute_cn` runs the Demirag/Ayday et al. protocol
 
 No raw neighbor sets are ever exchanged — only encrypted intersection sizes via the [OpenMined PSI](https://github.com/OpenMined/PSI) library (ECDH-based, cardinality-only mode).
 
-!!! note "Current limitation"
-    Both parties currently run in the same process. A network layer (so each party runs on a separate machine) is planned for a future release.
+## Distributed use (two machines)
+
+In a real deployment each party runs on a separate machine. Party 2 starts a server; Party 1 connects to it over HTTP. No raw graph data is exchanged.
+
+**Machine 2 (Party 2):**
+
+```bash
+pip install pplp
+pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
+```
+
+The CSV is a two-column, no-header edge list:
+
+```
+Alice,Bob
+Alice,Charlie
+Bob,Dave
+```
+
+**Machine 1 (Party 1):**
+
+```python
+from pplp import Graph, compute_cn_remote, party2_client
+
+graph1 = Graph.from_edge_list([...])
+
+with party2_client("http://<machine2-ip>:8000") as client:
+    cn = compute_cn_remote(graph1, client, "Alice", "Bob")
+    print(f"Common Neighbors: {cn}")
+```
+
+`compute_cn_remote` runs the same Ayday et al. protocol as `compute_cn` — three PSI calls — but each call is a pair of HTTP round-trips to Party 2's server. Party 2 never learns Party 1's graph; Party 1 never learns Party 2's graph.
