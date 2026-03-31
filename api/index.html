@@ -564,6 +564,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#streamlit-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streamlit UI
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -814,6 +825,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#streamlit-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streamlit UI
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -943,8 +965,19 @@
 <td><code>8000</code></td>
 <td>Port</td>
 </tr>
+<tr>
+<td><code>--tunnel</code></td>
+<td>off</td>
+<td>Expose via ngrok (requires <code>uv sync --extra tunnel</code>)</td>
+</tr>
 </tbody>
 </table>
+<hr />
+<h2 id="streamlit-ui">Streamlit UI<a class="headerlink" href="#streamlit-ui" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>uv<span class="w"> </span>run<span class="w"> </span>streamlit<span class="w"> </span>run<span class="w"> </span>app.py
+</code></pre></div>
+<p>A web interface for building graphs and running PPLP queries. See the <a href="../usage/#web-ui-streamlit-app">Usage Guide</a> for details.</p>
+<p>Requires <code>uv sync --extra ui</code> and <code>npm install -g localtunnel</code>.</p>
 
 
 
