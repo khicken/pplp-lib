@@ -16,6 +16,17 @@ CallType = Literal["crossover1", "crossover2", "overlap"]
 router = APIRouter()
 
 
+# --- /health ---
+
+class HealthResponse(BaseModel):
+    status: str
+
+
+@router.get("/health", response_model=HealthResponse)
+def health():
+    return HealthResponse(status="ok")
+
+
 # --- /prepare ---
 
 class PrepareRequest(BaseModel):

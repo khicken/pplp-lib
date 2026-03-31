@@ -44,6 +44,12 @@ def main():
         action="store_true",
         help="Expose server via ngrok tunnel (no firewall config needed)",
     )
+    parser.add_argument(
+        "--tunnel-timeout",
+        type=int,
+        default=60,
+        help="Timeout in seconds for establishing ngrok tunnel (default: 60)",
+    )
     args = parser.parse_args()
 
     graph = load_graph_from_csv(args.graph_file)
@@ -55,7 +61,7 @@ def main():
     if args.tunnel:
         from pyngrok import ngrok
 
-        tunnel = ngrok.connect(args.port, bind_tls=True)
+        tunnel = ngrok.connect(args.port, bind_tls=True, timeout=args.tunnel_timeout)
         public_url = tunnel.public_url
 
         print("\n" + "=" * 60)

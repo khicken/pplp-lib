@@ -170,7 +170,39 @@ def build_graph_from_session():
     return g
 
 
-def start_localtunnel(port: int) -> subprocess.Popen | None:
+LOCALTUNNEL_HEADERS = {"Bypass-Tunnel-Reminder": "true"}
+
+
+def test_party2_connection(party2_url: str):
+    """Test connection to Party 2's server."""
+    import httpx
+
+    try:
+        with httpx.Client(base_url=party2_url, timeout=15, headers=LOCALTUNNEL_HEADERS) as client:
+            resp = client.get("/health")
+            if resp.status_code == 200:
+                st.success("Connected to Party 2's server!")
+                st.info(
+                    "Your setup looks good. Run a query below to compute Common Neighbors. "
+                    "A result of 0 means the node pair has no common neighbors across both graphs."
+                )
+            elif resp.status_code == 404:
+                st.error(
+                    "Connected to the tunnel, but the server isn't responding. "
+                    "This can happen if localtunnel's splash page is blocking requests. "
+                    "Make sure Party 2 has the latest code with the bypass header."
+                )
+            else:
+                st.error(f"Unexpected response: HTTP {resp.status_code}")
+    except httpx.ConnectError:
+        st.error("Connection failed. Check that Party 2's server is running and the URL is correct.")
+    except httpx.ReadTimeout:
+        st.error("Connection timed out. The tunnel may be slow or Party 2's server may not be responding.")
+    except Exception as e:
+        st.error(f"Connection failed: {e}")
+
+
+def start_localtunnel(port: int) -> tuple[subprocess.Popen | None, str | None]:
     try:
         process = subprocess.Popen(
             ["lt", "--port", str(port)],
@@ -178,15 +210,22 @@ def start_localtunnel(port: int) -> subprocess.Popen | None:
             stderr=subprocess.STDOUT,
             text=True,
         )
-        for line in iter(process.stdout.readline, ""):
-            if "your url is:" in line.lower():
-                url = line.strip().split()[-1]
-                return process, url
-            if "https://" in line.lower():
-                for word in line.split():
-                    if word.startswith("https://"):
-                        return process, word
-        return process, None
+        import re
+        url_pattern = re.compile(r"https://\S+")
+        deadline = time.time() + 15
+
+        while time.time() < deadline:
+            if process.poll() is not None:
+                return None, None
+            line = process.stdout.readline()
+            if not line:
+                time.sleep(0.1)
+                continue
+            match = url_pattern.search(line)
+            if match:
+                return process, match.group()
+        process.terminate()
+        return None, None
     except FileNotFoundError:
         return None, None
 
@@ -200,19 +239,30 @@ def start_server_with_tunnel(graph, port: int = 8765):
     config = uvicorn.Config(app, host="0.0.0.0", port=port, log_level="warning")
     server = uvicorn.Server(config)
 
+    server_ready = threading.Event()
+
     def run_server():
+        old_startup = server.startup
+
+        async def patched_startup(**kwargs):
+            await old_startup(**kwargs)
+            server_ready.set()
+
+        server.startup = patched_startup
         server.run()
 
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
 
-    time.sleep(1)
+    if not server_ready.wait(timeout=10):
+        return None, None, None
 
-    result = start_localtunnel(port)
-    if result[0] is None:
+    tunnel_process, tunnel_url = start_localtunnel(port)
+    if tunnel_url is None:
+        if tunnel_process:
+            tunnel_process.terminate()
         return server_thread, None, None
 
-    tunnel_process, tunnel_url = result
     return server_thread, tunnel_process, tunnel_url
 
 
@@ -243,6 +293,10 @@ def render_party2_mode():
             with st.spinner("Starting server and tunnel..."):
                 server_thread, tunnel_process, tunnel_url = start_server_with_tunnel(graph, port)
 
+            if server_thread is None:
+                st.error(f"Server failed to start on port {port}. The port may already be in use.")
+                return
+
             st.session_state.server_thread = server_thread
             st.session_state.tunnel_process = tunnel_process
 
@@ -254,7 +308,8 @@ def render_party2_mode():
                 st.error(
                     "Failed to start localtunnel. Make sure it's installed: `npm install -g localtunnel`"
                 )
-                st.info(f"Server is running locally at http://localhost:{port}")
+                st.info(f"Server is running locally at http://localhost:{port}. "
+                        "You can share this address directly if both machines are on the same network.")
     else:
         st.success("Server is running!")
 
@@ -296,13 +351,7 @@ def render_party1_mode():
 
     if party2_url:
         if st.button("Test Connection"):
-            try:
-                import httpx
-                with httpx.Client(base_url=party2_url, timeout=10) as client:
-                    resp = client.get("/")
-                    st.success(f"Connected! Server responded with status {resp.status_code}")
-            except Exception as e:
-                st.error(f"Connection failed: {e}")
+            test_party2_connection(party2_url)
 
     st.markdown("---")
     st.subheader("Run PPLP Query")
@@ -346,11 +395,22 @@ def run_pplp_query(party2_url: str, graph1, x: str, y: str):
 
             st.success(f"Common Neighbors score for ({x}, {y}): **{result}**")
 
-            st.markdown("""
-            **Interpretation:**
-            - Higher scores indicate stronger likelihood of a future link
-            - This score was computed without either party revealing their graph structure
-            """)
+            if result == 0:
+                st.markdown(f"""
+                **Interpretation:** No common neighbors were found across both graphs for ({x}, {y}).
+                This can mean:
+                - Node `{x}` or `{y}` may not exist in Party 2's graph
+                - The nodes exist but share no neighbors across the combined graph
+                - Only one party has a neighbor to both nodes
+
+                This is a valid result, not an error.
+                """)
+            else:
+                st.markdown("""
+                **Interpretation:**
+                - Higher scores indicate stronger likelihood of a future link
+                - This score was computed without either party revealing their graph structure
+                """)
 
         except DirectLinkFound:
             st.warning(

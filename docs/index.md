@@ -56,3 +56,7 @@ with party2_client("https://<party2-tunnel-url>") as client:
 ```
 
 See the [Usage Guide](usage.md) for full details.
+
+## Platform support
+
+PPLP runs on **macOS (Apple Silicon)** and **Linux (x86_64)**. Windows users can run PPLP via WSL2 or Docker — see the [Usage Guide](usage.md#platform-support) for instructions.

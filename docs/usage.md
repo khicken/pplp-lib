@@ -13,6 +13,39 @@ uv sync --extra ui
 npm install -g localtunnel
 ```
 
+### Platform support
+
+| Platform | Status |
+|----------|--------|
+| macOS (Apple Silicon) | Fully supported |
+| Linux (x86_64) | Fully supported |
+| Windows | Use WSL2 or Docker (see below) |
+
+The `openmined-psi` package only provides pre-built wheels for macOS ARM64 and Linux x86_64. Windows users have two options:
+
+#### Option 1: WSL2 (recommended)
+
+Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) with Ubuntu, then run PPLP inside WSL:
+
+```bash
+# In WSL terminal
+cd /mnt/c/path/to/pplp-lib
+uv sync --extra ui
+uv run streamlit run app.py
+```
+
+#### Option 2: Docker
+
+```bash
+docker run -it --rm -p 8501:8501 -v $(pwd):/app -w /app python:3.12 bash
+pip install uv && uv sync --extra ui
+uv run streamlit run app.py --server.address 0.0.0.0
+```
+
+Then open `http://localhost:8501` in your browser.
+
+---
+
 ## Web UI (Streamlit App)
 
 The Streamlit app provides a visual interface for building graphs and running PPLP — no Python code required.
@@ -61,7 +94,7 @@ Alice,Charlie
 Bob,Dave
 ```
 
-#### Option 1: localtunnel (no firewall config)
+#### Option 1: ngrok tunnel (no firewall config)
 
 Use `--tunnel` to expose the server via ngrok:
 
@@ -69,7 +102,9 @@ Use `--tunnel` to expose the server via ngrok:
 uv run pplp-server party2_graph.csv --tunnel
 ```
 
-The server prints a public URL (e.g., `https://abc123.ngrok.io`) — share this with Party 1. No router config or port forwarding needed.
+The server prints a public URL (e.g., `https://abc123.ngrok.io`) — share this with Party 1. No router config or port forwarding needed. Use `--tunnel-timeout` if on a slow connection (default: 60s).
+
+> **Note:** Free ngrok accounts assign a random URL each time. For a stable URL, sign up at ngrok.com and add your authtoken.
 
 #### Option 2: Manual firewall
 
@@ -86,6 +121,7 @@ Options:
 | `--host` | `0.0.0.0` | Bind address |
 | `--port` | `8000` | Port |
 | `--tunnel` | `False` | Expose via ngrok tunnel |
+| `--tunnel-timeout` | `60` | Tunnel connection timeout (seconds) |
 
 ### Party 1: Run the query
 

@@ -150,7 +150,8 @@ Bob,Charlie
 | `graph_file` | required | Path to edge-list CSV |
 | `--host` | `0.0.0.0` | Bind address |
 | `--port` | `8000` | Port |
-| `--tunnel` | off | Expose via ngrok (requires `uv sync --extra tunnel`) |
+| `--tunnel` | off | Expose via ngrok tunnel |
+| `--tunnel-timeout` | `60` | Tunnel connection timeout (seconds) |
 
 ---
 
