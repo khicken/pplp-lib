@@ -12,6 +12,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+tunnel = ["pyngrok>=7.0"]
 
 [build-system]
 requires = ["hatchling"]

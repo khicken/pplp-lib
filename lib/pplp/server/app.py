@@ -29,19 +29,49 @@ def load_graph_from_csv(path: str) -> Graph:
 
 
 def main():
-    """CLI entrypoint: pplp-server <graph.csv> [--host HOST] [--port PORT]"""
+    """CLI entrypoint: pplp-server <graph.csv> [--host HOST] [--port PORT] [--tunnel]"""
     import argparse
+    import threading
+
     import uvicorn
 
     parser = argparse.ArgumentParser(description="Run the PPLP Party 2 server")
     parser.add_argument("graph_file", help="Path to edge-list CSV (u,v per line, no header)")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument(
+        "--tunnel",
+        action="store_true",
+        help="Expose server via ngrok tunnel (no firewall config needed). Requires: pip install pplp[tunnel]",
+    )
     args = parser.parse_args()
 
     graph = load_graph_from_csv(args.graph_file)
     app = create_app(graph)
-    uvicorn.run(app, host=args.host, port=args.port)
+
+    config = uvicorn.Config(app, host=args.host, port=args.port, log_level="info")
+    server = uvicorn.Server(config)
+
+    if args.tunnel:
+        try:
+            from pyngrok import ngrok
+        except ImportError:
+            raise SystemExit(
+                "pyngrok is required for --tunnel. Install it with: pip install pplp[tunnel]"
+            )
+
+        tunnel = ngrok.connect(args.port, bind_tls=True)
+        public_url = tunnel.public_url
+
+        print("\n" + "=" * 60)
+        print("  TUNNEL READY")
+        print("  Share this URL with Party 1:")
+        print(f"  {public_url}")
+        print("=" * 60 + "\n")
+
+    server_thread = threading.Thread(target=server.run, daemon=True)
+    server_thread.start()
+    server_thread.join()
 
 
 if __name__ == "__main__":

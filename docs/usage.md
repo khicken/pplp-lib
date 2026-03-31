@@ -20,6 +20,21 @@ Alice,Charlie
 Bob,Dave
 ```
 
+### Option 1: ngrok tunnel (no firewall config)
+
+Install the tunnel dependency and use `--tunnel`:
+
+```bash
+pip install pplp[tunnel]
+pplp-server party2_graph.csv --tunnel
+```
+
+The server prints a public URL (e.g. `https://abc123.ngrok.io`) — share this with Party 1. No router config or port forwarding needed.
+
+### Option 2: Manual firewall
+
+If you prefer to open ports yourself:
+
 ```bash
 pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
 ```
@@ -30,6 +45,7 @@ Options:
 |------|---------|-------------|
 | `--host` | `0.0.0.0` | Bind address |
 | `--port` | `8000` | Port |
+| `--tunnel` | `False` | Expose via ngrok tunnel |
 
 ## Party 1: run the query
 
@@ -43,7 +59,7 @@ graph1 = Graph.from_edge_list([
     ("Eve", "Charlie"), ("Eve", "Diana"),
 ])
 
-with party2_client("http://<party2-ip>:8000") as client:
+with party2_client("http://<party2-ip>:8000") as client:  # or https://... if using --tunnel
     cn = compute_cn_remote(graph1, client, "Alice", "Eve")
     print(f"Common Neighbors: {cn}")
 ```
