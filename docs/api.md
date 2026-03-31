@@ -150,3 +150,16 @@ Bob,Charlie
 | `graph_file` | required | Path to edge-list CSV |
 | `--host` | `0.0.0.0` | Bind address |
 | `--port` | `8000` | Port |
+| `--tunnel` | off | Expose via ngrok (requires `uv sync --extra tunnel`) |
+
+---
+
+## Streamlit UI
+
+```bash
+uv run streamlit run app.py
+```
+
+A web interface for building graphs and running PPLP queries. See the [Usage Guide](usage.md#web-ui-streamlit-app) for details.
+
+Requires `uv sync --extra ui` and `npm install -g localtunnel`.

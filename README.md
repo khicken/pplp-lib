@@ -4,13 +4,28 @@ Privacy-preserving link prediction library for two-party distributed graphs, bas
 
 Compute Common Neighbors across two graphs without either party revealing their edges — using Private Set Intersection (PSI) under the hood.
 
+## Quick start
+
+### Web UI
+
+```bash
+uv sync --extra ui
+npm install -g localtunnel
+uv run streamlit run app.py
+```
+
+Party 2 starts the server and shares the tunnel URL. Party 1 connects and runs queries.
+
+### Python API
+
 ```python
-from pplp import Graph, compute_cn
+from pplp import Graph, compute_cn_remote, party2_client
 
 graph1 = Graph.from_edge_list([("A", "B"), ("A", "C")])
-graph2 = Graph.from_edge_list([("A", "D"), ("B", "D")])
 
-cn = compute_cn(graph1, graph2, "A", "D")
+with party2_client("https://<party2-tunnel-url>") as client:
+    cn = compute_cn_remote(graph1, client, "A", "D")
+    print(f"Common Neighbors: {cn}")
 ```
 
 **[Documentation](https://khicken.github.io/pplp-lib/)**

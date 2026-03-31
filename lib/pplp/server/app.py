@@ -42,7 +42,7 @@ def main():
     parser.add_argument(
         "--tunnel",
         action="store_true",
-        help="Expose server via ngrok tunnel (no firewall config needed). Requires: pip install pplp[tunnel]",
+        help="Expose server via ngrok tunnel (no firewall config needed)",
     )
     args = parser.parse_args()
 
@@ -53,12 +53,7 @@ def main():
     server = uvicorn.Server(config)
 
     if args.tunnel:
-        try:
-            from pyngrok import ngrok
-        except ImportError:
-            raise SystemExit(
-                "pyngrok is required for --tunnel. Install it with: pip install pplp[tunnel]"
-            )
+        from pyngrok import ngrok
 
         tunnel = ngrok.connect(args.port, bind_tls=True)
         public_url = tunnel.public_url

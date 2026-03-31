@@ -15,25 +15,42 @@ Two parties (each holding a private graph on separate machines) can compute how 
 
 ## Quick start
 
+### Option A: Web UI (recommended for getting started)
+
+The easiest way to try PPLP is with the Streamlit app. Each party runs the app locally and connects via a public tunnel.
+
+```bash
+# Install with UI dependencies
+uv sync --extra ui
+
+# Install localtunnel (requires Node.js)
+npm install -g localtunnel
+
+# Run the app
+uv run streamlit run app.py
+```
+
+**Party 2** selects "Party 2 (Server)", builds their graph, clicks "Start Server with Tunnel", and shares the URL.
+
+**Party 1** selects "Party 1 (Client)", builds their graph, pastes Party 2's URL, and runs queries.
+
+### Option B: Command line + Python
+
 **Party 2 — start the server:**
 
 ```bash
-pip install pplp
-pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
+uv sync
+uv run pplp-server party2_graph.csv --tunnel
 ```
 
 **Party 1 — run the query:**
-
-```bash
-pip install pplp
-```
 
 ```python
 from pplp import Graph, compute_cn_remote, party2_client
 
 graph1 = Graph.from_edge_list([("Alice", "Bob"), ("Alice", "Charlie")])
 
-with party2_client("http://<party2-ip>:8000") as client:
+with party2_client("https://<party2-tunnel-url>") as client:
     cn = compute_cn_remote(graph1, client, "Alice", "Dave")
     print(f"Common Neighbors: {cn}")
 ```

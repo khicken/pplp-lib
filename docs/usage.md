@@ -3,14 +3,55 @@
 ## Installation
 
 ```bash
-pip install pplp
+uv sync
 ```
 
-## Setup
+For the web UI, include the `ui` extra:
+
+```bash
+uv sync --extra ui
+npm install -g localtunnel
+```
+
+## Web UI (Streamlit App)
+
+The Streamlit app provides a visual interface for building graphs and running PPLP — no Python code required.
+
+```bash
+uv run streamlit run app.py
+```
+
+### Party 2: Start the server
+
+1. Open the app and select **"Party 2 (Server)"** in the sidebar
+2. Build your graph using the Graph Builder:
+    - Type edges like `Alice,Bob` or `Alice Bob` and click "Add Edge"
+    - Or upload a CSV file with one edge per line
+3. Click **"Start Server with Tunnel"**
+4. Copy the tunnel URL (e.g., `https://xyz.loca.lt`) and share it with Party 1
+5. Keep the app running while Party 1 sends queries
+
+### Party 1: Run queries
+
+1. Open the app and select **"Party 1 (Client)"** in the sidebar
+2. Build your graph using the Graph Builder
+3. Paste Party 2's tunnel URL and click **"Test Connection"** to verify
+4. Select the node pair (X, Y) you want to query
+5. Click **"Compute Common Neighbors"**
+
+The result shows the Common Neighbors score computed privately — neither party reveals their graph structure.
+
+---
+
+## Command Line Usage
+
+For scripting or automation, use the CLI and Python API directly.
+
+### Setup
 
 Each party installs `pplp` independently on their own machine. Node IDs must match across both graphs (e.g., both use email addresses or phone numbers for shared nodes).
 
-## Party 2: start the server
+### Party 2: Start the server
 
 Party 2 prepares a CSV edge list (no header, one edge per line) and starts the server:
 
@@ -20,23 +61,22 @@ Alice,Charlie
 Bob,Dave
 ```
 
-### Option 1: ngrok tunnel (no firewall config)
+#### Option 1: localtunnel (no firewall config)
 
-Install the tunnel dependency and use `--tunnel`:
+Use `--tunnel` to expose the server via ngrok:
 
 ```bash
-pip install pplp[tunnel]
-pplp-server party2_graph.csv --tunnel
+uv run pplp-server party2_graph.csv --tunnel
 ```
 
-The server prints a public URL (e.g. `https://abc123.ngrok.io`) — share this with Party 1. No router config or port forwarding needed.
+The server prints a public URL (e.g., `https://abc123.ngrok.io`) — share this with Party 1. No router config or port forwarding needed.
 
-### Option 2: Manual firewall
+#### Option 2: Manual firewall
 
 If you prefer to open ports yourself:
 
 ```bash
-pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
+uv run pplp-server party2_graph.csv --host 0.0.0.0 --port 8000
 ```
 
 Options:
@@ -47,7 +87,7 @@ Options:
 | `--port` | `8000` | Port |
 | `--tunnel` | `False` | Expose via ngrok tunnel |
 
-## Party 1: run the query
+### Party 1: Run the query
 
 Party 1 builds their graph in Python and connects to Party 2's server:
 
@@ -59,12 +99,14 @@ graph1 = Graph.from_edge_list([
     ("Eve", "Charlie"), ("Eve", "Diana"),
 ])
 
-with party2_client("http://<party2-ip>:8000") as client:  # or https://... if using --tunnel
+with party2_client("https://<party2-tunnel-url>") as client:
     cn = compute_cn_remote(graph1, client, "Alice", "Eve")
     print(f"Common Neighbors: {cn}")
 ```
 
 Only Party 1 learns the result. Party 2's graph structure is never revealed.
+
+---
 
 ## Building graphs
 
@@ -91,6 +133,8 @@ graph.add_edge("alice", "charlie")
 If the candidate pair is already directly connected, there's no need for link prediction:
 
 ```python
+from pplp import DirectLinkFound
+
 try:
     cn = compute_cn_remote(graph1, client, "Alice", "Eve")
 except ValueError:
@@ -104,6 +148,8 @@ except DirectLinkFound:
 ### Missing nodes
 
 If a node doesn't exist in one graph, its neighbor set is treated as empty — the protocol still works, you just get zero contribution from that side.
+
+---
 
 ## What's happening under the hood
 

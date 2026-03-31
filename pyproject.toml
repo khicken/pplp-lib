@@ -8,11 +8,12 @@ dependencies = [
     "fastapi>=0.110.0",
     "uvicorn[standard]>=0.29.0",
     "httpx>=0.27.0",
+    "pyngrok>=7.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
-tunnel = ["pyngrok>=7.0"]
+ui = ["streamlit>=1.30.0", "networkx>=3.0", "matplotlib>=3.7.0"]
 
 [build-system]
 requires = ["hatchling"]
