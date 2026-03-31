@@ -35,6 +35,22 @@ def init_session_state():
 init_session_state()
 
 
+def parse_edges(text: str) -> list[tuple[str, str]]:
+    edges = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.replace(",", " ").split()
+        if len(parts) >= 2:
+            u, v = parts[0].strip(), parts[1].strip()
+            if u and v and u != v:
+                edge = tuple(sorted([u, v]))
+                if edge not in edges:
+                    edges.append(edge)
+    return edges
+
+
 def get_nodes_from_edges() -> list[str]:
     nodes = set()
     for u, v in st.session_state.edges:
@@ -46,90 +62,27 @@ def get_nodes_from_edges() -> list[str]:
 def render_graph_builder():
     st.subheader("Graph Builder")
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("**Add Edge**")
-        with st.form("add_edge_form", clear_on_submit=True):
-            edge_input = st.text_input(
-                "Edge (format: A,B or A B)",
-                placeholder="e.g., Alice,Bob",
-                help="Enter two node names separated by comma or space",
-            )
-            if st.form_submit_button("Add Edge"):
-                edge_input = edge_input.strip()
-                if edge_input:
-                    parts = edge_input.replace(",", " ").split()
-                    if len(parts) >= 2:
-                        u, v = parts[0].strip(), parts[1].strip()
-                        if u and v and u != v:
-                            edge = tuple(sorted([u, v]))
-                            if edge not in st.session_state.edges:
-                                st.session_state.edges.append(edge)
-                                st.rerun()
-                            else:
-                                st.warning("Edge already exists")
-                        else:
-                            st.error("Invalid edge: nodes must be different and non-empty")
-                    else:
-                        st.error("Please enter two node names")
-
-    with col2:
-        st.markdown("**Bulk Import (CSV)**")
-        uploaded_file = st.file_uploader(
-            "Upload edge list CSV", type=["csv", "txt"], help="One edge per line: nodeA,nodeB"
-        )
-        if uploaded_file is not None:
-            import io
-            content = uploaded_file.read().decode("utf-8")
-            lines = content.strip().split("\n")
-            new_edges = []
-            for line in lines:
-                line = line.strip()
-                if not line:
-                    continue
-                parts = line.replace(",", " ").split()
-                if len(parts) >= 2:
-                    u, v = parts[0].strip(), parts[1].strip()
-                    if u and v and u != v:
-                        edge = tuple(sorted([u, v]))
-                        if edge not in st.session_state.edges and edge not in new_edges:
-                            new_edges.append(edge)
-            if new_edges:
-                st.session_state.edges.extend(new_edges)
-                st.success(f"Added {len(new_edges)} edges")
-                st.rerun()
-
-    st.markdown("---")
-
     col_graph, col_edges = st.columns([2, 1])
 
     with col_edges:
-        st.markdown("**Current Edges**")
-        if st.session_state.edges:
-            for i, (u, v) in enumerate(st.session_state.edges):
-                col_e, col_x = st.columns([3, 1])
-                col_e.text(f"{u} -- {v}")
-                if col_x.button("X", key=f"del_{i}", help="Remove edge"):
-                    st.session_state.edges.pop(i)
-                    st.rerun()
-
-            if st.button("Clear All Edges", type="secondary"):
-                st.session_state.edges = []
-                st.rerun()
-        else:
-            st.info("No edges yet. Add edges above.")
+        st.text_area(
+            "Edges (one per line: A,B or A B)",
+            height=500,
+            placeholder="Alice,Bob\nBob,Charlie\nAlice,Charlie",
+            key="edge_text",
+        )
+        st.session_state.edges = parse_edges(st.session_state.edge_text or "")
 
     with col_graph:
-        st.markdown("**Graph Visualization**")
         if st.session_state.edges:
             render_graph_viz()
+            nodes = get_nodes_from_edges()
+            st.markdown(
+                f"<p style='text-align: center; color: gray;'>{len(nodes)} nodes, {len(st.session_state.edges)} edges</p>",
+                unsafe_allow_html=True,
+            )
         else:
             st.info("Add edges to see visualization")
-
-    st.markdown("---")
-    nodes = get_nodes_from_edges()
-    st.markdown(f"**Summary:** {len(nodes)} nodes, {len(st.session_state.edges)} edges")
 
 
 def render_graph_viz():
@@ -154,7 +107,7 @@ def render_graph_viz():
             edge_color="#666666",
             width=2,
         )
-        ax.set_title("Your Graph")
+
         st.pyplot(fig)
         plt.close(fig)
     except ImportError:
@@ -422,7 +375,7 @@ def run_pplp_query(party2_url: str, graph1, x: str, y: str):
 
 
 def main():
-    st.title("PPLP - Privacy-Preserving Link Prediction")
+    st.title("Privacy-Preserving Link Prediction (PPLP)")
 
     st.markdown("""
     This tool enables two parties to compute **Common Neighbors** link prediction
