@@ -87,31 +87,94 @@ def render_graph_builder():
 
 def render_graph_viz():
     try:
-        import networkx as nx
-        import matplotlib.pyplot as plt
+        from pyvis.network import Network
+        import streamlit.components.v1 as components
 
-        G = nx.Graph()
-        G.add_edges_from(st.session_state.edges)
-
-        fig, ax = plt.subplots(figsize=(8, 6))
-        pos = nx.spring_layout(G, seed=42)
-        nx.draw(
-            G,
-            pos,
-            ax=ax,
-            with_labels=True,
-            node_color="#4CAF50",
-            node_size=700,
-            font_size=10,
-            font_weight="bold",
-            edge_color="#666666",
-            width=2,
+        net = Network(height="500px", width="100%", bgcolor="#ffffff", font_color="#000000")
+        net.barnes_hut(
+            gravity=-3000,
+            central_gravity=0.3,
+            spring_length=120,
+            spring_strength=0.05,
+            damping=0.09,
         )
 
-        st.pyplot(fig)
-        plt.close(fig)
+        nodes = set()
+        for u, v in st.session_state.edges:
+            nodes.add(u)
+            nodes.add(v)
+
+        for node in nodes:
+            net.add_node(node, label=node, size=25,
+                         font={"size": 14, "face": "arial"},
+                         color={"background": "#4CAF50", "border": "#388E3C",
+                                "highlight": {"background": "#81C784", "border": "#4CAF50"},
+                                "hover": {"background": "#81C784", "border": "#4CAF50"}})
+
+        for u, v in st.session_state.edges:
+            net.add_edge(u, v, width=2,
+                         color={"color": "#666666",
+                                "highlight": "#81C784",
+                                "hover": "#81C784"})
+
+        net.set_options("""
+        {
+            "interaction": {
+                "hover": true,
+                "zoomView": true,
+                "dragView": true,
+                "navigationButtons": false
+            },
+            "physics": {
+                "stabilization": {"iterations": 200}
+            }
+        }
+        """)
+
+        html = net.generate_html()
+        # Inject a fullscreen toggle button
+        fullscreen_btn = """
+        <style>
+            body { margin: 0; }
+            .fullscreen-btn {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                z-index: 9999;
+                background: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                font-family: arial, sans-serif;
+                opacity: 0.85;
+            }
+            .fullscreen-btn:hover { opacity: 1; }
+            body:fullscreen, body:-webkit-full-screen {
+                background: #ffffff;
+            }
+            body:fullscreen #mynetwork, body:-webkit-full-screen #mynetwork {
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+        </style>
+        <button class="fullscreen-btn" onclick="
+            var el = document.body;
+            if (!document.fullscreenElement) {
+                el.requestFullscreen();
+                this.textContent = 'Exit Fullscreen';
+            } else {
+                document.exitFullscreen();
+                this.textContent = 'Fullscreen';
+            }
+        ">Fullscreen</button>
+        """
+        html = html.replace("<body>", "<body>" + fullscreen_btn)
+        components.html(html, height=520, scrolling=False)
     except ImportError:
-        st.warning("Install networkx and matplotlib for visualization: uv sync --extra ui")
+        st.warning("Install pyvis for interactive visualization: uv pip install pyvis")
         st.code("\n".join(f"{u} -- {v}" for u, v in st.session_state.edges))
 
 
@@ -288,7 +351,7 @@ def render_party1_mode():
     As Party 1, you will:
     1. Build your private graph below
     2. Connect to Party 2's server URL
-    3. Query for Common Neighbors between node pairs
+    3. Query for link prediction scores between node pairs
     """)
 
     render_graph_builder()
@@ -319,6 +382,15 @@ def render_party1_mode():
 
     nodes = get_nodes_from_edges()
 
+    measure = st.radio(
+        "Link prediction measure",
+        options=["Common Neighbors", "Jaccard"],
+        horizontal=True,
+        help="Common Neighbors = raw count of shared neighbors. "
+             "Jaccard = CN normalized by total neighbors (0–1 range). "
+             "Jaccard uses 2 extra PSI calls for degree computation.",
+    )
+
     col1, col2 = st.columns(2)
     with col1:
         node_x = st.selectbox("Node X", options=nodes, index=0 if nodes else None)
@@ -334,19 +406,29 @@ def render_party1_mode():
             if graph1.has_edge(node_x, node_y):
                 st.warning(f"{node_x} and {node_y} are already direct neighbors in your graph!")
             else:
-                if st.button("Compute Common Neighbors", type="primary"):
-                    run_pplp_query(party2_url, graph1, node_x, node_y)
+                label = "Compute " + measure
+                if st.button(label, type="primary"):
+                    run_pplp_query(party2_url, graph1, node_x, node_y, measure)
 
 
-def run_pplp_query(party2_url: str, graph1, x: str, y: str):
-    from pplp import compute_cn_remote, DirectLinkFound, party2_client
+def run_pplp_query(party2_url: str, graph1, x: str, y: str, measure: str = "Common Neighbors"):
+    from pplp import compute_cn_remote, compute_jaccard_remote, DirectLinkFound, party2_client
 
-    with st.spinner(f"Computing Common Neighbors for ({x}, {y})..."):
+    use_jaccard = measure == "Jaccard"
+    label = "Jaccard" if use_jaccard else "Common Neighbors"
+
+    with st.spinner(f"Computing {label} for ({x}, {y})..."):
         try:
             with party2_client(party2_url, timeout=60.0) as client:
-                result = compute_cn_remote(graph1, client, x, y)
+                if use_jaccard:
+                    result = compute_jaccard_remote(graph1, client, x, y)
+                else:
+                    result = compute_cn_remote(graph1, client, x, y)
 
-            st.success(f"Common Neighbors score for ({x}, {y}): **{result}**")
+            if use_jaccard:
+                st.success(f"Jaccard score for ({x}, {y}): **{result:.4f}**")
+            else:
+                st.success(f"Common Neighbors score for ({x}, {y}): **{result}**")
 
             if result == 0:
                 st.markdown(f"""
@@ -359,11 +441,19 @@ def run_pplp_query(party2_url: str, graph1, x: str, y: str):
                 This is a valid result, not an error.
                 """)
             else:
-                st.markdown("""
-                **Interpretation:**
-                - Higher scores indicate stronger likelihood of a future link
-                - This score was computed without either party revealing their graph structure
-                """)
+                if use_jaccard:
+                    st.markdown("""
+                    **Interpretation:**
+                    - Jaccard ranges from 0 to 1 — higher means more neighbor overlap relative to total neighbors
+                    - Normalizes for node degree, unlike raw Common Neighbors
+                    - Computed with 5 PSI calls without revealing graph structure
+                    """)
+                else:
+                    st.markdown("""
+                    **Interpretation:**
+                    - Higher scores indicate stronger likelihood of a future link
+                    - This score was computed without either party revealing their graph structure
+                    """)
 
         except DirectLinkFound:
             st.warning(

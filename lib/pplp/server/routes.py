@@ -11,7 +11,7 @@ from pplp.server.session import PsiSession
 
 _FPR = 0.001
 _DATA_STRUCTURE = psi.DataStructure.GCS
-CallType = Literal["crossover1", "crossover2", "overlap"]
+CallType = Literal["crossover1", "crossover2", "overlap", "degree_x", "degree_y"]
 
 router = APIRouter()
 
@@ -32,12 +32,15 @@ def health():
 class PrepareRequest(BaseModel):
     x: str
     y: str
+    measure: Literal["cn", "jaccard"] = "cn"
 
 
 class PrepareResponse(BaseModel):
     direct_link: bool
     local2: int
     session_id: str
+    degree2_x: int = 0
+    degree2_y: int = 0
 
 
 @router.post("/prepare", response_model=PrepareResponse)
@@ -53,16 +56,29 @@ def prepare(req: PrepareRequest, request: Request):
     g2_x = g2.neighbors(x) - local2_set
     g2_y = g2.neighbors(y) - local2_set
 
-    session = PsiSession(
-        sets={
-            "crossover1": g2_y,
-            "crossover2": g2_x,
-            "overlap":    local2_set,
-        },
-        local2=len(local2_set),
-    )
+    sets = {
+        "crossover1": g2_y,
+        "crossover2": g2_x,
+        "overlap":    local2_set,
+    }
+
+    degree2_x = 0
+    degree2_y = 0
+    if req.measure == "jaccard":
+        sets["degree_x"] = g2.neighbors(x)
+        sets["degree_y"] = g2.neighbors(y)
+        degree2_x = len(g2.neighbors(x))
+        degree2_y = len(g2.neighbors(y))
+
+    session = PsiSession(sets=sets, local2=len(local2_set))
     sid = store.put(session)
-    return PrepareResponse(direct_link=False, local2=session.local2, session_id=sid)
+    return PrepareResponse(
+        direct_link=False,
+        local2=session.local2,
+        session_id=sid,
+        degree2_x=degree2_x,
+        degree2_y=degree2_y,
+    )
 
 
 # --- /psi/{session_id}/setup and /psi/{session_id}/respond ---
