@@ -412,7 +412,7 @@ def render_party1_mode():
 
 
 def run_pplp_query(party2_url: str, graph1, x: str, y: str, measure: str = "Common Neighbors"):
-    from pplp import compute_cn_remote, compute_jaccard_remote, DirectLinkFound, party2_client
+    from pplp import compute_cn_remote, compute_jaccard_remote, party2_client
 
     use_jaccard = measure == "Jaccard"
     label = "Jaccard" if use_jaccard else "Common Neighbors"
@@ -455,11 +455,6 @@ def run_pplp_query(party2_url: str, graph1, x: str, y: str, measure: str = "Comm
                     - This score was computed without either party revealing their graph structure
                     """)
 
-        except DirectLinkFound:
-            st.warning(
-                f"**Direct link found!** Nodes {x} and {y} are already connected in Party 2's graph. "
-                "This is stronger evidence than Common Neighbors."
-            )
         except Exception as e:
             st.error(f"Error during computation: {e}")
 

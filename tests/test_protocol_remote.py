@@ -39,12 +39,14 @@ def test_remote_direct_link_graph1_raises():
         compute_cn_remote(g1, party2, "A", "B")
 
 
-def test_remote_direct_link_graph2_raises():
+def test_remote_direct_link_graph2_runs_protocol():
+    # Security: if x-y is a direct edge in graph2 only, the server must run PPLP
+    # as normal without signaling the edge. CN here is the count of shared
+    # neighbors between A and B across both graphs ({C} → 1).
     g1 = Graph.from_edge_list([("A", "C"), ("B", "C")])
     g2 = Graph.from_edge_list([("A", "B")])
     party2 = TestClient(create_app(g2))
-    with pytest.raises(DirectLinkFound):
-        compute_cn_remote(g1, party2, "A", "B")
+    assert compute_cn_remote(g1, party2, "A", "B") == 1
 
 
 def test_remote_no_common_neighbors():

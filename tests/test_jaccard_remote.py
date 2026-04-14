@@ -40,12 +40,13 @@ def test_remote_direct_link_graph1_jaccard():
         compute_jaccard_remote(g1, party2, "A", "B")
 
 
-def test_remote_direct_link_graph2_jaccard():
+def test_remote_direct_link_graph2_runs_protocol():
+    # Security: server must not halt/signal on a direct graph2 edge; run PPLP as normal.
     g1 = Graph.from_edge_list([("A", "C"), ("B", "C")])
     g2 = Graph.from_edge_list([("A", "B")])
     party2 = TestClient(create_app(g2))
-    with pytest.raises(DirectLinkFound):
-        compute_jaccard_remote(g1, party2, "A", "B")
+    result = compute_jaccard_remote(g1, party2, "A", "B")
+    assert 0.0 <= result <= 1.0
 
 
 def test_remote_no_common_neighbors_jaccard():

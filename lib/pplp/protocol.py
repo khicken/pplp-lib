@@ -84,9 +84,6 @@ def compute_cn_remote(graph1: Graph, party2_client, x: str, y: str) -> int:
     prep_resp.raise_for_status()
     prep = prep_resp.json()
 
-    if prep["direct_link"]:
-        raise DirectLinkFound(f"{x} and {y} are direct neighbors in graph2")
-
     local2 = prep["local2"]
     session_id = prep["session_id"]
 
@@ -117,9 +114,6 @@ def compute_jaccard_remote(graph1: Graph, party2_client, x: str, y: str) -> floa
     )
     prep_resp.raise_for_status()
     prep = prep_resp.json()
-
-    if prep["direct_link"]:
-        raise DirectLinkFound(f"{x} and {y} are direct neighbors in graph2")
 
     local2 = prep["local2"]
     session_id = prep["session_id"]

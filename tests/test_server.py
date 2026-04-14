@@ -18,18 +18,21 @@ def test_prepare_returns_session_and_local2():
     resp = client.post("/prepare", json={"x": "A", "y": "E"})
     assert resp.status_code == 200
     data = resp.json()
-    assert data["direct_link"] is False
     assert data["local2"] == 2          # {C, F}
     assert "session_id" in data
 
 
-def test_prepare_detects_direct_link():
+def test_prepare_does_not_leak_direct_edge():
+    # Security: server must not reveal whether x-y is a direct edge in graph2.
+    # Response shape must match the no-edge case.
     g2 = Graph.from_edge_list([("A", "E")])
     app = create_app(g2)
     client = TestClient(app)
     resp = client.post("/prepare", json={"x": "A", "y": "E"})
     assert resp.status_code == 200
-    assert resp.json()["direct_link"] is True
+    data = resp.json()
+    assert "direct_link" not in data
+    assert "session_id" in data and data["session_id"]
 
 
 def test_store_creates_and_retrieves_session():

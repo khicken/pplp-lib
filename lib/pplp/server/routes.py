@@ -36,7 +36,6 @@ class PrepareRequest(BaseModel):
 
 
 class PrepareResponse(BaseModel):
-    direct_link: bool
     local2: int
     session_id: str
     degree2_x: int = 0
@@ -49,9 +48,6 @@ def prepare(req: PrepareRequest, request: Request):
     store = request.app.state.store
 
     x, y = req.x, req.y
-    if g2.has_edge(x, y):
-        return PrepareResponse(direct_link=True, local2=0, session_id="")
-
     local2_set = g2.local_intersection(x, y)
     g2_x = g2.neighbors(x) - local2_set
     g2_y = g2.neighbors(y) - local2_set
@@ -73,7 +69,6 @@ def prepare(req: PrepareRequest, request: Request):
     session = PsiSession(sets=sets, local2=len(local2_set))
     sid = store.put(session)
     return PrepareResponse(
-        direct_link=False,
         local2=session.local2,
         session_id=sid,
         degree2_x=degree2_x,
