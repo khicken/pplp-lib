@@ -1,28 +1,29 @@
-# PPLP Midterm Report (ACM 2-column)
+# PPLP Reports (ACM 2-column)
 
-This folder contains the ACM-formatted midterm report for the Privacy-Preserving Link Prediction (PPLP) project.
+This folder contains the ACM-formatted midterm and final reports for the Privacy-Preserving Link Prediction (PPLP) project.
 
 ## Files
 
-- **PPLP-midterm.tex** — Main LaTeX source
-- **references.bib** — BibTeX references
+- **PPLP-midterm.tex** — Midterm LaTeX source
+- **PPLP-final.tex** — Final LaTeX source (extends the midterm with proposed solution, demos, threat model expansion, tradeoffs, limitations, future work, conclusion)
+- **references.bib** — Shared BibTeX references
 - **acmart.cls** — ACM Primary Article Template class (sigconf = 2-column)
 - **ACM-Reference-Format.bst** — Bibliography style
-- **PPLP-midterm.pdf** — Compiled PDF (generated)
+- **PPLP-midterm.pdf** / **PPLP-final.pdf** — Compiled PDFs (generated)
 
 ## Build
 
-From this directory:
+From this directory (replace `PPLP-final` with `PPLP-midterm` as needed):
 
 ```bash
-pdflatex PPLP-midterm
-bibtex PPLP-midterm
-pdflatex PPLP-midterm
-pdflatex PPLP-midterm
+pdflatex PPLP-final
+bibtex PPLP-final
+pdflatex PPLP-final
+pdflatex PPLP-final
 ```
 
-Or use Overleaf: create a new project, upload `PPLP-midterm.tex`, `references.bib`, `acmart.cls`, and `ACM-Reference-Format.bst`, set the main file to `PPLP-midterm.tex`, and compile.
+Or use Overleaf: create a new project, upload `PPLP-final.tex`, `references.bib`, `acmart.cls`, and `ACM-Reference-Format.bst` plus the `figures/` directory, set the main file to `PPLP-final.tex`, and compile.
 
 ## Submission
 
-For Canvas, you may submit `PPLP-midterm.pdf` as-is, or copy/rename it to `PPLP.pdf` if your course expects the filename `ProjectAcronym.pdf`.
+For Canvas, submit `PPLP-final.pdf` (rename to `PPLP.pdf` if the course expects `ProjectAcronym.pdf`) along with the source code archive.

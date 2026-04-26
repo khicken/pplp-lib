@@ -1,0 +1,627 @@
+Kaleb Kim, Wiam Skakri, Carson Whitehouse, Jonah Lorenzo, Kent Manion, Aidan Bugayong
+Case Western Reserve University
+04/14/2026
+Privacy Preserving Link Prediction
+kent
+
+Goal
+2
+kent
+
+To build a Python library that allows anyone to apply privacy preserving link prediction.
+
+3
+kent
+
+Refresher:
+Link Prediction
+4
+kent
+
+Link Prediction
+Link prediction helps discover unobserved or latent connections between nodes in a graph
+Data holders rank the likelihood of new connections forming overtime
+Useful for social networks, e-commerce, telecomms, bioinformatics…
+
+kent
+
+Link Prediction
+Link prediction is typically done on a single local graph
+Link prediction can be more accurate if we merge two or more graph databases that include similar information (Distributed Link Prediction)
+
+kent
+
+Distributed Link Prediction
+Two parties can utilize the connections in their combined graph to provide more accurate link predictions
+In other cases, distributed link prediction allows link prediction between nodes based on other attributes
+kent
+
+Distributed Link Prediction
+
+In some cases, collaboration is mutually beneficial to contributing parties
+In other cases, the second party is paid to participate
+Distributed Link Prediction results in privacy concerns since it implies combining two or more different graph databases!
+Identity Disclosure
+Link Disclosure
+Attribute Disclosure
+A
+C
+E
+B
+G
+H
+D
+A
+F
+E
+B
+C
+K
+D
+A
+C
+E
+B
+G
+H
+D
+K
+F
+kent
+
+Refresher:
+Privacy Preserving Link Prediction
+9
+carson
+
+Privacy preserving link prediction allows multiple data holders to collaboratively forecast unobserved or latent connections between nodes without explicitly revealing what each party knows.
+
+
+10
+Carson
+
+Use Cases I
+Social Networks: Privacy-First recommendations
+Discovering friend suggestions between users based on structural similarity (Think of # Mutual Connections on Instagram!)
+Does not expose the full contact list of either party
+Telecommunications: Targeted Advertising
+Finding target audience members similar to an existing set
+Link prediction on phone networks while keeping the actual call/link records private
+E-Commerce: Collaborative Filtering
+Recommending products to a user based on similarities between them and others’ purchasing
+Does not use a central server seeing individual transaction histories
+Carson
+
+Use Cases II
+Bioinformatics: Secure EHR Research
+Merging Electronic Health Records (EHR) with clustering graphs to predict disease spread or patient diagnoses
+Does not reveal sensitive protected health information (PHI).
+Financial Fraud Detection: Exposing multibank criminal networks
+PPLP supports fraud detection by identifying suspicious latent connections between accounts at different institutions which is a marker for money-laundering
+Raw graph sharing is prohibited by financial privacy regulation, so this could allows banks observe the transaction subgraph of a potentially criminal organization.
+
+Carson
+
+Revisiting our Example
+13
+Aidan
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Subset only Looking N(A,E)
+G
+H
+D
+K
+D
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+G
+H
+D
+K
+D
+NA(A)={H,G,B,C}
+NA(E)={D,C}
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+
+NB(A)={K,F,C}
+NB(E)={B,C,F,D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+
+Searching Local Graph
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Searching Local Graph
+G
+H
+D
+K
+D
+NA(A)={H,G,B,C}
+NA(E)={D,C}
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+NA(A) - IA(A,E) ={H,G,B}
+NA(E) - IA(A,E) ={D}
+NB(A)={K,F,C}
+NB(E)={B,C,F,D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+NB(E) - IB(A,E) ={B,D}
+NB(A) - IB(A,E) ={K}
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Applying PSI
+G
+H
+D
+K
+D
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+NA(A-E)={H,G,B}
+NA(E-A)={D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+NB(E-A)={B,D}
+NB(A-E) ={K}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PSI
+IA∩IB=IA+B={C}
+
+
+
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Applying PSI
+G
+H
+D
+K
+D
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+NA(A-E)={H,G,B}
+NA(E-A)={D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+NB(E-A)={B,D}
+NB(A-E) ={K}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PSI
+IA∩IB=IA+B={C}
+NA(A-E)∩NB(E-A)={B}
+
+
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+G
+H
+D
+K
+D
+NA(A) ∩ NA(E) = IA(A,E)  = {C} 
+NA(A-E)={H,G,B}
+NA(E-A)={D}
+NB(A) ∩ NB(E) = IB(A,E) = {C,F}
+NB(E-A)={B,D}
+NB(A-E) ={K}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PSI
+IA∩IB=IA+B={C}
+NA(A-E)∩NB(E-A)={B}
+NA(E-A)∩NB(A-E)={𝜙}
+
+Applying PSI
+Aida n
+
+
+Alice
+Bob
+A
+C
+E
+B
+A
+F
+E
+B
+C
+Size of CN(A,E)
+G
+H
+D
+K
+D
+NA(A)={H,G,B,C}
+NA(E)={D,C}
+IA(A,E)  = {C} 
+NB(A)={K,F,C}
+NB(E)={B,C,F,D}
+IB(A,E) = {C,F}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PSI
+IA∩IB=IA+B={C}
+NA(A-E)∩NB(E-A)={B}
+NA(E-A)∩NB(A-E)={𝜙}
+
+|CN(A,E)| = 
+|IA| + |IB| - |IA+B|+|{B}|+|{𝜙}|
+= 3
+
+Aida n
+
+Project Details
+21
+
+System Design Architecture
+Server
+Client
+Client
+Client
+Owner hosts a running PPLP library instance, and users connect with a shared link
+Practically, can monetize with a “Pay-Per-Query" business model
+I.e., users run secure queries for a service fee
+Kaleb
+
+A database owner creates a running server instance of the PPLP library and shares the connection link allowing any person who wants to use the database for PPLP to do so. A database owner would do this if they want to share the utility of their data but doesn’t want to directly release all of the database. A practical implementation of this would include things such as pay per query design where clients pay a fee to the service owner to run PPLP queries on the data.
+
+kaleb
+
+Demo
+Server - Online Social Network Example (With Familiar Names)Erman_Ayday,Yuqiao_Xu
+Erman_Ayday,Wiam_Skakri
+Erman_Ayday,Kaleb_Kim
+Wiam_Skakri,Tahir_Shah
+Wiam_Skakri,Kent_Manion
+Wiam_Skakri,Aidan_Bugayong
+Kaleb_Kim,Zeien_Chase
+Kaleb_Kim,Jonah_Lorenzo
+Kaleb_Kim,Kent_Manion
+Kent_Manion,Zeien_Chase
+Kent_Manion,Carson_Whitehouse
+Carson_Whitehouse,John_Yoon
+Carson_Whitehouse,Jonah_Lorenzo
+Jonah_Lorenzo,Nathan_Link
+Jonah_Lorenzo,Aidan_Bugayong
+Aidan_Bugayong,Logan_Camp
+Aidan_Bugayong,Kent_Manion
+Nathan_Link,Zeien_Chase
+Yuqiao_Xu,John_Yoon
+Erman_Ayday,Aidan_Bugayong
+Kaleb_Kim,Wiam_Skakri
+Carson_Whitehouse,Aidan_Bugayong
+Darin_Hall,Eric_Kaler
+Client1 - Market / Purchasing Data Purchases
+
+Erman_Ayday,Wireless_Headphones
+Erman_Ayday,Gaming_Mouse
+Wiam_Skakri,Wireless_Headphones
+Wiam_Skakri,Smart_Light_Bulb
+Kaleb_Kim,Gaming_Mouse
+Kaleb_Kim,Mechanical_Keyboard
+Kent_Manion,Mechanical_Keyboard
+Kent_Manion,Portable_Monitor
+Aidan_Bugayong,Mechanical_Keyboard
+Aidan_Bugayong,Smart_Light_Bulb
+Jonah_Lorenzo,Portable_Monitor
+Jonah_Lorenzo,Noise-Cancelling_Earbuds
+Carson_Whitehouse,Smart_Light_Bulb
+Carson_Whitehouse,Wireless_Charger
+Yuqiao_Xu,Noise-Cancelling_Earbuds
+Yuqiao_Xu,Gaming_Mouse
+Tahir_Shah,Mechanical_Keyboard
+Tahir_Shah,Portable_Monitor
+Nathan_Link,Wireless_Headphones
+Nathan_Link,Smart_Light_Bulb
+Zeien_Chase,USB-C_Hub
+Zeien_Chase,Wireless_Headphones
+John_Yoon,Noise-Cancelling_Earbuds
+John_Yoon,Gaming_Mouse
+Darin_Hall,Broken_Camera
+Kalen and JonahGood queries:Kaleb_Kim and Wireless_Headphones (CN)
+Wiam_Skakri and Mechanical_Keyboard (Jaccard)Bad queriesDarin_Hall and Wireless_HeadphonesAny Product to Product
+
+Demo Cont.
+Client2 - Proprietary Patient and Disease Data
+
+Erman_Ayday,Goated_Teaching_Disorder
+Wiam_Skakri,Flu
+Wiam_Skakri,Cold
+Kaleb_Kim,Flu
+Kent_Manion,Covid
+Aidan_Bugayong,Covid
+Jonah_Lorenzo,Cold
+Carson_Whitehouse,Flu
+Carson_Whitehouse,Insomnia
+
+Client3 - User and Show Data
+
+Erman_Ayday,Stranger_Things
+Erman_Ayday,Penguins_of_Madagascar
+Wiam_Skakri,Stranger_Things
+Wiam_Skakri,Black_Mirror
+Kaleb_Kim,Penguins_of_Madagascar
+Kaleb_Kim,The_Witcher
+Kent_Manion,Black_Mirror
+Kent_Manion,You
+Aidan_Bugayong,The_Witcher
+Aidan_Bugayong,Bridgerton
+Jonah_Lorenzo,You
+Jonah_Lorenzo,Wednesday
+Carson_Whitehouse,Bridgerton
+Carson_Whitehouse,The_Queen's_Gambit
+Yuqiao_Xu,The_Crown
+Yuqiao_Xu,Stranger_Things
+Tahir_Shah,Penguins_of_Madagascar
+Tahir_Shah,Black_Mirror
+Nathan_Link,The_Witcher
+Nathan_Link,You
+Deethya_Makonahalli,Bridgerton
+Deethya_Makonahalli,Wednesday
+John_Yoon,The_Queen's_Gambit
+John_Yoon,Stranger_Things
+Darin_Hall,The_Barbie_Show
+
+Kaleb and JonahClient 2Bad Queries:Anything with Goated_Teaching_Disorder and InsomniaAny Disease to DiseaseClient 3
+Good Queries:
+Wiam_Skakri and Penguins_of_Madagascar
+
+Bad Queries
+Anything with Darin or The_Barbie_ShowAny Show to Show
+
+CN and Jaccard Consistency
+Our two chosen link prediction statistics show similar results, meaning higher likelihood of the existence of a link
+Nodes have higher presence in either the server or graph set. This means that either the node has more than a single connection in either graph, in other words together one of the graphs has significant information on the node
+Server shares their graph attribute(s) with formatting, thus any queries to the server should include at least one node from an attribute(s) of the server.
+Nodes have High Presence
+Good Query Type
+Common Attribute
+Aidan
+
+Queries on Obscure Nodes
+Some nodes in the server have significantly less information on them than others. As a result querying on these nodes will result in less information gain. Unfortunately, due to the server-client nature of our implementation these queries are inevitable
+Client 2’s disease graph data was extremely sparse with only a single disease appearing 1-3 times, thus making it hard to draw significant findings from the data
+If a query to the server is on two nodes not in the server’s attribute(s) then the nodes will consequently not be in the set of nodes of the graph. Thus this query would result in the same as a local link prediction and the server query is pointless.
+Sparse Client Data
+Bad Query Type
+No Common Attributes
+Aidan
+
+Project Challenges
+Selecting a Compatible PSI Backend                                                                                           
+Most PSI libraries (including FastPSI) are Linux-only, require AVX-512, or lack Python bindings
+Ended up using openmined-psi since it runs on Linux/Unix systems with cardinality-only mode
+
+Serializing PSI Objects Over HTTP
+The C++ PSI library produces protobuf objects that can't be sent as JSON directly
+Ended up base64-encoding each protobuf message and deserializing on the other side
+
+The Server-Client Connection
+Potential firewall and network restrictions when allowing any given pair of clients to connect
+Ended up using localtunnel and bypassed their splash page
+
+A Pair Query Vulnerability
+A malicious client could repeatedly submit pairs of nodes to discover aspects of the servers graph
+The server will still run the protocol as normal
+Kaleb
+
+Tradeoffs
+Privacy vs. Efficiency
+The paper offers a heavier homomorphic version that hides all intermediate values…
+But we chose the lightweight variant that reveals intermediate sizes to Party 1 for speed
+  
+Accuracy vs. Efficiency
+Jaccard normalizes CN by total degree, giving a more meaningful 0–1 score
+Requires 5 PSI calls instead of 3 and Party 2 revealing degree sizes
+
+Memory vs. Storage                                                                                    
+Current implementation is simple, such that sessions live in a dict but never garbage-collected
+Persistent storage is required for production but unnecessary for a local environment
+
+Neighbor counting vs. Neighbor weighting
+CN/Jaccard treat neighbors equally, which is supported by the paper
+Adamic-Adar/Katz requires fundamentally different PSI primitives or multi-round protocols
+Wiam 
+
+
+
+
+
+
+Threat Model - Semi Honest
+Both parties are assumed to:
+Follow the protocol faithfully
+They do not deviate
+They do not send malformed input
+They do not abort early
+Try to infer information from the protocol messages they legitimately receive
+
+Security Goals:
+Party 1 must not learn party 2’s raw neighbor sets for any node 
+Party 2 must not learn party 1’s raw neighbor sets for any node
+PSI calls only expose intersection sizes, never the actual set members
+Only party 1 learns the final CN results and party 2 learns nothing beyond the common public inputs
+Wiam
+
+
+Threats and Attacks for Non-Honest Attackers
+
+Server could deviate from the protocol by including a completely connected graph or a null graph, allowing the server to determine the selected link prediction statistic of the client
+Client could continuously alter their graph after queries to determine the presence or absence of edges/nodes in the server graph, potentially leading to a reconstruction of the server’s graph
+Our system forces clients to query on nodes present in their own graph, thus a client could include a single edge connecting those nodes to determine the common neighbours presence in the server graph. Note this attack only works if both nodes are present in the server graph
+Wiam
+
+
+
+
+System Limitations
+How should known links be treated by the server?
+In order to prevent the client from partially reconstructing the servers graph using repeated queries, the server will not alert the client if the queried nodes are connected
+
+Candidate Node Selection
+Current implementation requires client to manually select nodes to query, these nodes are not guaranteed to be represented in server’s graph
+
+Results have Low Utility in Isolation
+CN and Jaccard measures are only useful in link prediction when computed for many nodes
+
+System Compatibility
+openmined-psi not compatible with Windows systems, limiting to Unix like systems such as macOS and Linux
+Jonah
+
+Future Work
+
+Stronger Link Prediction Measures
+CN is the simplest measure of node connectivity, and a single result is meaningless in isolation
+Jaccard Index results in a slightly stronger statistic but is still relatively naive and simple
+Adamic-Adar measure could allow for stronger link prediction by accounting for hub nodes, however a privacy preserving implementation requires a different approach.
+
+More advanced graph representations
+Current implementation uses a simple one-attribute graph
+Does not support weighted or directional graphs
+
+Integration with database systems
+Current implementation requires user to manually specify the graph, or enter a CSV formatted file
+Integration with a database system could allow for clients and servers to easily perform queries on large data sets
+
+
+Jonah
+
+Conclusion
+Previous work 
+(Chen, Laine & Rindal (2017) delivered a high-performance PSI but our goal was to implement Ling et. al (2025)
+An ultra-fast PSI protocol built upon a novel, bucket-based Oblivious Key-Value Store (OKVS) and Vector Oblivious Linear Evaluation (VOLE)
+Our contribution
+We succefully implemented Dirmiag et al. (2022) PPLP into a Python library to predict links while still preserving privacy
+This technology allows users to take advantage of powerful link prediction tools without sacrificing their data privacy and keeping their connections anonymous
+
+Wiam
+
+So to wrap things up, let's talk about where this work fits in the broader landscape and what we actually delivered.
+
+In terms of previous work, Chen, Laine, and Rindal published a high-performance PSI implementation back in 2017. 
+..
+
+For our contribution, we focused on the applied side. We successfully implemented the Demirag and Ayday et al. 2022 privacy-preserving link prediction protocol as a fully functional Python library. It supports both Common Neighbors and Jaccard, works across two machines over HTTP with tunneling built in, and comes with a Streamlit UI so you don't even need to write code to use it.
+
+Ollows users to take advantage of powerful link prediction tools — the kind used for friend recommendations, collaborative filtering, gene association — without sacrificing their data privacy and without revealing their connections to the other party. That's the core value of what we built.
+
+Thank you!
+Question?
+35
