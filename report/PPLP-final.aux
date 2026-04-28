@@ -1,0 +1,102 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{Demirag2022}
+\citation{openminedpsi}
+\citation{ling2025ultrafast}
+\citation{liben-nowell2007link}
+\citation{Demirag2022}
+\citation{liben-nowell2007link}
+\citation{Demirag2022}
+\citation{chen2017fast}
+\citation{gentry2009lattice}
+\citation{ling2025ultrafast}
+\@writefile{toc}{\contentsline {section}{Abstract}{1}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}Problem Statement and Literature Search}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Link Prediction}{1}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Related Work}{1}{subsection.1.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Siloed vs.\ merged data. Each party independently produces only partial predictions (left), whereas merging graphs yields an enriched, more accurate result (right), at the cost of privacy without PPLP.}}{2}{figure.caption.5}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:motivation}{{1}{2}{Siloed vs.\ merged data. Each party independently produces only partial predictions (left), whereas merging graphs yields an enriched, more accurate result (right), at the cost of privacy without PPLP}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Motivating Use Cases}{2}{subsection.1.3}\protected@file@percent }
+\newlabel{sec:motivating}{{1.3}{2}{Motivating Use Cases}{subsection.1.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Planned Methods}{2}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Link-Prediction Measures}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Threat Model}{2}{subsection.2.2}\protected@file@percent }
+\newlabel{sec:midterm-threat-model}{{2.2}{2}{Threat Model}{subsection.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Two-Party Common Neighbors via PSI}{2}{subsection.2.3}\protected@file@percent }
+\citation{ling2025ultrafast}
+\citation{Demirag2022}
+\citation{ling2025ultrafast}
+\citation{openminedpsi}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Two-Party Node Cardinalities via PSI}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Privacy Primitives}{3}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}System Architecture}{3}{subsection.2.6}\protected@file@percent }
+\newlabel{sec:midterm-architecture}{{2.6}{3}{System Architecture}{subsection.2.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Proposed Solution}{3}{section.3}\protected@file@percent }
+\newlabel{sec:proposed-solution}{{3}{3}{Proposed Solution}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Midterm Plan vs.\ Delivered}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:midterm-deltas}{{3.1}{3}{Midterm Plan vs.\ Delivered}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Overview}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}PSI Backend: From \texttt  {fastpsi} to OpenMined PSI}{3}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:psi-backend}{{3.3}{3}{PSI Backend: From \texttt {fastpsi} to OpenMined PSI}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}System Architecture: Recasting the Protocol as a Service}{3}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:server-client}{{3.4}{3}{System Architecture: Recasting the Protocol as a Service}{subsection.3.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Two-party graph union. Alice's graph $G_A$ (left) and Bob's graph $G_B$ (center) share overlapping node set $\{A,B,C,D,E\}$; their union (right) contains additional nodes $G$, $H$ from Alice and $K$, $F$ from Bob.}}{4}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:graph-union}{{2}{4}{Two-party graph union. Alice's graph $G_A$ (left) and Bob's graph $G_B$ (center) share overlapping node set $\{A,B,C,D,E\}$; their union (right) contains additional nodes $G$, $H$ from Alice and $K$, $F$ from Bob}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Applying PSI for candidate pair $(A,E)$. Alice and Bob first compute local intersections $I_A$ and $I_B$ independently. Three PSI calls then privately resolve the crossover terms: $I_A \cap I_B = \{C\}$, $N_A(A\text  {-}E) \cap N_B(E\text  {-}A) = \{B\}$, and $N_A(E\text  {-}A) \cap N_B(A\text  {-}E) = \emptyset $.}}{4}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:applying-psi}{{3}{4}{Applying PSI for candidate pair $(A,E)$. Alice and Bob first compute local intersections $I_A$ and $I_B$ independently. Three PSI calls then privately resolve the crossover terms: $I_A \cap I_B = \{C\}$, $N_A(A\text {-}E) \cap N_B(E\text {-}A) = \{B\}$, and $N_A(E\text {-}A) \cap N_B(A\text {-}E) = \emptyset $}{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Computing $|\text  {CN}(A,E)|$. Combining local terms $|I_A|{=}1$ and $|I_B|{=}2$ with the PSI-computed crossover results yields $|\text  {CN}(A,E)| = 1 + 2 - 1 + 1 + 0 = 3$.}}{5}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:cn-result}{{4}{5}{Computing $|\text {CN}(A,E)|$. Combining local terms $|I_A|{=}1$ and $|I_B|{=}2$ with the PSI-computed crossover results yields $|\text {CN}(A,E)| = 1 + 2 - 1 + 1 + 0 = 3$}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Two-Party Jaccard via PSI}{5}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Network Layer and Wire Format}{5}{subsection.3.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces HTTP message flow for one Common Neighbors query (3 PSI calls = 6 round trips after \texttt  {/prepare}). Jaccard adds two further \emph  {degree\_x} and \emph  {degree\_y} PSI calls.}}{5}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:sequence}{{5}{5}{HTTP message flow for one Common Neighbors query (3 PSI calls = 6 round trips after \texttt {/prepare}). Jaccard adds two further \emph {degree\_x} and \emph {degree\_y} PSI calls}{figure.caption.9}{}}
+\citation{Demirag2022}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Frontend and Validation}{6}{subsection.3.7}\protected@file@percent }
+\newlabel{sec:frontend}{{3.7}{6}{Frontend and Validation}{subsection.3.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}Microbenchmarks}{6}{subsection.3.8}\protected@file@percent }
+\newlabel{sec:results}{{3.8}{6}{Microbenchmarks}{subsection.3.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Threat Model in Practice}{6}{section.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Per-query latency and wire payload as a function of per-side neighborhood size $|N(x)|=|N(y)|$. Latencies in milliseconds (median of 3--5 trials), payloads in bytes per HTTP exchange. Apple Silicon, in-process FastAPI test client.}}{6}{table.caption.11}\protected@file@percent }
+\newlabel{tab:perf}{{1}{6}{Per-query latency and wire payload as a function of per-side neighborhood size $|N(x)|=|N(y)|$. Latencies in milliseconds (median of 3--5 trials), payloads in bytes per HTTP exchange. Apple Silicon, in-process FastAPI test client}{table.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Adaptive Queries: The Cost of Being a Service}{6}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:adaptive-queries}{{4.1}{6}{Adaptive Queries: The Cost of Being a Service}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Tunnel-Layer Metadata}{6}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:tunnel-leakage}{{4.2}{6}{Tunnel-Layer Metadata}{subsection.4.2}{}}
+\citation{Demirag2022}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Streamlit dashboard excerpts. Panel (a) is Party\nonbreakingspace 2 after deployment; Panel (b) is Party\nonbreakingspace 1 running a scored query against the server's public URL.}}{7}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:dashboard}{{6}{7}{Streamlit dashboard excerpts. Panel (a) is Party~2 after deployment; Panel (b) is Party~1 running a scored query against the server's public URL}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Other Out-of-Scope Adversaries}{7}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Demo and Use Cases}{7}{section.5}\protected@file@percent }
+\newlabel{sec:demo}{{5}{7}{Demo and Use Cases}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Representative queries from the demo, classified by the categories above (P\,=\,productive, N\,=\,no common attribute, L\,=\,low server presence, S\,=\,sparse client data). All remote results matched the plaintext baseline.}}{7}{table.caption.12}\protected@file@percent }
+\newlabel{tab:demo}{{2}{7}{Representative queries from the demo, classified by the categories above (P\,=\,productive, N\,=\,no common attribute, L\,=\,low server presence, S\,=\,sparse client data). All remote results matched the plaintext baseline}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Design Tradeoffs}{7}{section.6}\protected@file@percent }
+\bibstyle{ACM-Reference-Format}
+\bibdata{references}
+\bibcite{chen2017fast}{{1}{2017}{{Chen et~al\mbox  {.}}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}System Limitations}{8}{section.7}\protected@file@percent }
+\newlabel{sec:limitations}{{7}{8}{System Limitations}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Future Work}{8}{section.8}\protected@file@percent }
+\newlabel{sec:future}{{8}{8}{Future Work}{section.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Defending Against Adaptive Queries}{8}{subsection.8.1}\protected@file@percent }
+\newlabel{sec:future-adaptive}{{8.1}{8}{Defending Against Adaptive Queries}{subsection.8.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Other Extensions}{8}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{8}{section.9}\protected@file@percent }
+\bibcite{Demirag2022}{{2}{2022}{{Demirag et~al\mbox  {.}}}{{}}}
+\bibcite{gentry2009lattice}{{3}{2009}{{Gentry}}{{}}}
+\bibcite{liben-nowell2007link}{{4}{2007}{{Liben-Nowell and Kleinberg}}{{}}}
+\bibcite{ling2025ultrafast}{{5}{2025}{{Ling et~al\mbox  {.}}}{{}}}
+\bibcite{openminedpsi}{{6}{2024}{{OpenMined}}{{}}}
+\newlabel{tocindent-1}{0pt}
+\newlabel{tocindent0}{0pt}
+\newlabel{tocindent1}{4.185pt}
+\newlabel{tocindent2}{10.34999pt}
+\newlabel{tocindent3}{0pt}
+\newlabel{tocindent4}{0pt}
+\newlabel{tocindent5}{0pt}
+\@writefile{toc}{\contentsline {section}{References}{9}{section*.15}\protected@file@percent }
+\newlabel{TotPages}{{9}{9}{}{page.9}{}}
+\gdef \@abspage@last{9}
